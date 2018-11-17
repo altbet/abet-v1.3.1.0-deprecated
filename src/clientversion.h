@@ -13,9 +13,15 @@
  * client versioning and copyright year
  */
 
+/*****************************************************************/
+/*      Make comments below for updates                         */
+/*      First chain update will be v1.1.0.0 for rewards fix.   */
+/*      v1.1.0.0 signed off by TFinch 11/8/2018               */
+/*************************************************************/
+
 //! These need to be macros, as clientversion.cpp's and altbet*-res.rc's voodoo requires it
 #define CLIENT_VERSION_MAJOR 1
-#define CLIENT_VERSION_MINOR 0
+#define CLIENT_VERSION_MINOR 1
 #define CLIENT_VERSION_REVISION 0
 #define CLIENT_VERSION_BUILD 0
 
