@@ -149,10 +149,10 @@
 </tr>><tr>
 <td>PHASE UPDATE V1.2</td>
 <td>142121 - 146440</td>
-<td>8.00 ABET</td>
-<td>6.40 ABET</td>
-<td>1.60 ABET</td>
-<td>1 WEEK</td>
+<td>0.1 ABET</td>
+<td>0.08 ABET</td>
+<td>0.02 ABET</td>
+<td>3 DAYS</td>
 </tr><tr>
 <td>PHASE 13</td>
 <td>146441 - 156520</td>
