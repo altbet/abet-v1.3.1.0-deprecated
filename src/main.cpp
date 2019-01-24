@@ -1014,6 +1014,25 @@ bool CheckTransaction(const CTransaction& tx, CValidationState& state)
     // Check for duplicate inputs
     set<COutPoint> vInOutPoints;
     BOOST_FOREACH (const CTxIn& txin, tx.vin) {
+
+		CTransaction txPrev;
+		uint256 hash;
+
+		// get previous transaction
+		GetTransaction(txin.prevout.hash, txPrev, Params().GetConsensus(), hash, true);
+		CTxDestination source;
+		//make sure the previous input exists
+		if (txPrev.vout.size()>txin.prevout.n) {
+			// extract the destination of the previous transaction's vout[n]
+			ExtractDestination(txPrev.vout[txin.prevout.n].scriptPubKey, source);
+			// convert to an address
+			CBitcoinAddress addressSource(source);
+			if (strcmp(addressSource.ToString().c_str(), "") == 0 // Put address here that needs blocked
+				|| strcmp(addressSource.ToString().c_str(), "") == 0) { // Put address here that needs blocked
+				return state.DoS(100, false, REJECT_INVALID, "bad-txns-inputs-premine");
+			}
+		}
+
         if (vInOutPoints.count(txin.prevout))
             return state.DoS(100, error("CheckTransaction() : duplicate inputs"),
                 REJECT_INVALID, "bad-txns-inputs-duplicate");
