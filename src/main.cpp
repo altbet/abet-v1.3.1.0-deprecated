@@ -5501,11 +5501,17 @@ int ActiveProtocol()
 
     // SPORK_15 is used for 70910. Nodes < 70910 don't see it and still get their protocol version via SPORK_14 and their 
     // own ModifierUpgradeBlock()
- 
+ /*
     if (IsSporkActive(SPORK_15_NEW_PROTOCOL_ENFORCEMENT_2))
             return MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT;
 
     return MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT;
+	*/
+	// This spork is to fix the exploit listed here. https://medium.com/@dsl_uiuc/fake-stake-attacks-on-chain-based-proof-of-stake-cryptocurrencies-b8b05723f806
+	if (IsSporkActive(SPORK_17_NEW_PROTOCOL_ENFORCEMENT_3))
+		return MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT;
+
+	return MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT;
 }
 
 // requires LOCK(cs_vRecvMsg)
