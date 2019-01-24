@@ -146,37 +146,44 @@
 <td>6.00 ABET</td>
 <td>1.50 ABET</td>
 <td>1 WEEK</td>
+</tr>><tr>
+<td>PHASE UPDATE V1.2</td>
+<td>142121 - 146440</td>
+<td>8.00 ABET</td>
+<td>6.40 ABET</td>
+<td>1.60 ABET</td>
+<td>1 WEEK</td>
 </tr><tr>
 <td>PHASE 13</td>
-<td>142121 - 152200</td>
+<td>146441 - 156520</td>
 <td>8.00 ABET</td>
 <td>6.40 ABET</td>
 <td>1.60 ABET</td>
 <td>1 WEEK</td>
 </tr><tr>
 <td>PHASE 14</td>
-<td>152201 - 162280</td>
+<td>156520 - 166600</td>
 <td>8.50 ABET</td>
 <td>6.80 ABET</td>
 <td>1.70 ABET</td>
 <td>1 WEEK</td>
 </tr><tr>
 <td>PHASE 15</td>
-<td>162281 - 172360</td>
+<td>166601 - 176680</td>
 <td>9.00 ABET</td>
 <td>7.20 ABET</td>
 <td>1.80 ABET</td>
 <td>1 WEEK</td>
 </tr><tr>
 <td>PHASE 16</td>
-<td>172361 - 182440</td>
+<td>176680 - 186760</td>
 <td>9.50 ABET</td>
 <td>7.60 ABET</td>
 <td>1.90 ABET</td>
 <td>1 WEEK</td>
 </tr><tr>
 <td>PHASE 17</td>
-<td>182441 - 2167282</td>
+<td>186761+</td>
 <td>10.00 ABET</td>
 <td>8.00 ABET</td>
 <td>2.00 ABET</td>
