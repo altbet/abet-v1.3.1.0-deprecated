@@ -1644,47 +1644,50 @@ int64_t GetBlockValue(int nHeight)
 {
     int64_t nSubsidy = 0;
 
-    if (nHeight == 0) {
-        nSubsidy = 210000 * COIN;
-    }   else if (nHeight <= 1000) { //Before v1.1.0.0
-        nSubsidy = 0.1 * COIN;
-    }	else if (nHeight <= 21160) { //Before v1.1.0.0
-        nSubsidy = 0.7 * COIN;
-    }   else if (nHeight <= 31240) { //Before v1.1.0.0
-        nSubsidy = 2 * COIN;
-    }   else if (nHeight <= 41320) { //Before v1.1.0.0
-        nSubsidy = 2.5 * COIN;
-    }   else if (nHeight <= 51400 && nHeight > 41320) { // 7 days
-        nSubsidy = 3 * COIN;
-    }   else if (nHeight <= 61480 && nHeight > 51400) { // 7 days
-        nSubsidy = 3.5 * COIN;
-    }   else if (nHeight <= 71560 && nHeight > 61480) { // 7 days
-        nSubsidy = 4 * COIN;
-    }   else if (nHeight <= 81640 && nHeight > 71560) { // 7 days
-        nSubsidy = 4.5 * COIN;
-    }   else if (nHeight <= 91720 && nHeight > 81640) { // 7 days
-        nSubsidy = 5 * COIN;
-    }   else if (nHeight <= 101800 && nHeight > 91720) { // 7 days
-        nSubsidy = 5.5 * COIN;
-    }   else if (nHeight <= 111880 && nHeight > 101800) { // 7 days
-        nSubsidy = 6 * COIN;
-    }   else if (nHeight <= 121960 && nHeight > 111880) { // 7 days
-        nSubsidy = 6.5 * COIN;
-    }   else if (nHeight <= 132040 && nHeight > 121960) { // 7 days
-        nSubsidy = 7 * COIN;
-    }   else if (nHeight <= 142120 && nHeight > 132040) { // 7 days
-        nSubsidy = 7.5 * COIN;
-    }   else if (nHeight <= 152200 && nHeight > 142120) { // 7 days
-        nSubsidy = 8 * COIN;
-    }   else if (nHeight <= 162280 && nHeight > 152200) { // 7 days
-        nSubsidy = 8.5 * COIN;
-    }   else if (nHeight <= 172360 && nHeight > 162280) { // 7 days
-        nSubsidy = 9 * COIN;
-    }   else if (nHeight <= 182440 && nHeight > 172360) { // 4 years
-        nSubsidy = 9.5 * COIN;
-    }   else if (nHeight > 182440) { // Till Max Supply
-        nSubsidy = 10 * COIN;
-    }
+
+	if (nHeight == 0) {
+		nSubsidy = 210000 * COIN;
+	}else if (nHeight <= 1000) { //Before v1.1.0.0
+		nSubsidy = 0.1 * COIN;
+	}else if (nHeight <= 21160) { //Before v1.1.0.0
+		nSubsidy = 0.7 * COIN;
+	}else if (nHeight <= 31240) { //Before v1.1.0.0
+		nSubsidy = 2 * COIN;
+	}else if (nHeight <= 41320) { //Before v1.1.0.0
+		nSubsidy = 2.5 * COIN;
+	}else if (nHeight <= 51400 && nHeight > 41320) { // 7 days
+		nSubsidy = 3 * COIN;
+	}else if (nHeight <= 61480 && nHeight > 51400) { // 7 days
+		nSubsidy = 3.5 * COIN;
+	}else if (nHeight <= 71560 && nHeight > 61480) { // 7 days
+		nSubsidy = 4 * COIN;
+	}else if (nHeight <= 81640 && nHeight > 71560) { // 7 days
+		nSubsidy = 4.5 * COIN;
+	}else if (nHeight <= 91720 && nHeight > 81640) { // 7 days
+		nSubsidy = 5 * COIN;
+	}else if (nHeight <= 101800 && nHeight > 91720) { // 7 days
+		nSubsidy = 5.5 * COIN;
+	}else if (nHeight <= 111880 && nHeight > 101800) { // 7 days
+		nSubsidy = 6 * COIN;
+	}else if (nHeight <= 121960 && nHeight > 111880) { // 7 days
+		nSubsidy = 6.5 * COIN;
+	}else if (nHeight <= 132040 && nHeight > 121960) { // 7 days
+		nSubsidy = 7 * COIN;
+	}else if (nHeight <= 142120 && nHeight > 132040) { // 7 days
+		nSubsidy = 7.5 * COIN;
+	}else if (nHeight <= 146440 && nHeight > 142120) { // 3 days 142120 - 146440
+		nSubsidy = 0.1 * COIN;
+	}else if (nHeight <= 156520 && nHeight > 146440) { // 7 days 146440 - 156520
+		nSubsidy = 8 * COIN;
+	}else if (nHeight <= 166600 && nHeight > 156520) { // 7 days 156520 - 166600
+		nSubsidy = 8.5 * COIN;
+	}else if (nHeight <= 176680 && nHeight > 166600) { // 7 days 166600 - 176680
+		nSubsidy = 9 * COIN;
+	}else if (nHeight <= 186760 && nHeight > 176680) { // 4 years 176680 - 186760
+		nSubsidy = 9.5 * COIN;
+	}else if (nHeight > 186760) { // Till Max Supply 186760 - oo
+		nSubsidy = 10 * COIN;
+	}
     
     // Check if we reached the coin max supply.
     int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
@@ -2286,7 +2289,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
 	// add new entries
 	for (const CTransaction tx : block.vtx) {
-		if (tx.IsCoinBase() || tx.IsZerocoinSpend())
+		//if (tx.IsCoinBase() || tx.IsZerocoinSpend())
+		if (tx.IsCoinBase())
 			continue;
 		for (const CTxIn in : tx.vin) {
 			mapStakeSpent.insert(std::make_pair(in.prevout, pindex->nHeight));
