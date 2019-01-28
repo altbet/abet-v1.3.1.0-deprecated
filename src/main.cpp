@@ -3715,11 +3715,11 @@ void CBlockIndex::BuildSkip()
 bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp)
 {
     // Preliminary checks
-	int64_t nStartTime = GetTimeMillis();
+	//int64_t nStartTime = GetTimeMillis();
     bool checked = CheckBlock(*pblock, state);
 
 
-    /*// NovaCoin: check proof-of-stake block signature
+    // NovaCoin: check proof-of-stake block signature
     if (!pblock->CheckBlockSignature())
         return error("ProcessNewBlock() : bad proof-of-stake block signature");
 
@@ -3749,12 +3749,11 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
         bool ret = AcceptBlock(*pblock, state, &pindex, dbp);
         if (pindex && pfrom) {
             mapBlockSource[pindex->GetBlockHash()] = pfrom->GetId();
-        }*/
+        }
 
 
 
-	//New from pivx 3.2
-	
+	/*//New from pivx 3.2	
 	if (!CheckBlockSignature(*pblock))
 		return error("ProcessNewBlock() : bad proof-of-stake block signature");
 	if (pblock->GetHash() != Params().HashGenesisBlock() && pfrom != NULL) {
@@ -3765,6 +3764,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
 			return false;
 		}
 	}
+
 	{
 		LOCK(cs_main);   // Replaces the former TRY_LOCK loop because busy waiting wastes too much resources
 		MarkBlockAsReceived(pblock->GetHash());
@@ -3772,11 +3772,11 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
 			return error("%s : CheckBlock FAILED for block %s", __func__, pblock->GetHash().GetHex());
 		}
 		// Store to disk
-		CBlockIndex* pindex = NULL;
+		CBlockIndex* pindex = nullptr;
 		bool ret = AcceptBlock(*pblock, state, &pindex, dbp, checked);
 		if (pindex && pfrom) {
 			mapBlockSource[pindex->GetBlockHash()] = pfrom->GetId();
-		}
+		}*/
 
 
         CheckBlockIndex();
@@ -3786,7 +3786,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
 
 		if (!ret) {
 			// Check spamming
-			if (GetBoolArg("-blockspamfilter", DEFAULT_BLOCK_SPAM_FILTER)) {
+			if (pfrom && GetBoolArg("-blockspamfilter", DEFAULT_BLOCK_SPAM_FILTER)) {
 				CNodeState *nodestate = State(pfrom->GetId());
 				nodestate->nodeBlocks.onBlockReceived(pindex->nHeight);
 				bool nodeStatus = true;
