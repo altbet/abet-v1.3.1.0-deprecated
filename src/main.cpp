@@ -265,6 +265,82 @@ struct CBlockReject {
     uint256 hashBlock;
 };
 
+
+class CNodeBlocks
+{
+public:
+	CNodeBlocks() :
+		maxSize(0),
+		maxAvg(0)
+	{
+		maxSize = GetArg("-blockspamfiltermaxsize", DEFAULT_BLOCK_SPAM_FILTER_MAX_SIZE);
+		maxAvg = GetArg("-blockspamfiltermaxavg", DEFAULT_BLOCK_SPAM_FILTER_MAX_AVG);
+	}
+
+	bool onBlockReceived(int nHeight) {
+		if (nHeight > 0 && maxSize && maxAvg) {
+			addPoint(nHeight);
+			return true;
+		}
+		return false;
+	}
+
+	bool updateState(CValidationState& state, bool ret)
+	{
+		// No Blocks
+		size_t size = points.size();
+		if (size == 0)
+			return ret;
+
+		// Compute the number of the received blocks
+		size_t nBlocks = 0;
+		for (auto point : points)
+		{
+			nBlocks += point.second;
+		}
+
+		// Compute the average value per height
+		double nAvgValue = (double)nBlocks / size;
+
+		// Ban the node if try to spam
+		bool banNode = (nAvgValue >= 1.5 * maxAvg && size >= maxAvg) ||
+			(nAvgValue >= maxAvg && nBlocks >= maxSize) ||
+			(nBlocks >= maxSize * 3);
+		if (banNode)
+		{
+			// Clear the points and ban the node
+			points.clear();
+			return state.DoS(100, error("block-spam ban node for sending spam"));
+		}
+
+		return ret;
+	}
+
+private:
+	void addPoint(int height)
+	{
+		// Remove the last element in the list
+		if (points.size() == maxSize)
+		{
+			points.erase(points.begin());
+		}
+
+		// Add the point to the list
+		int occurrence = 0;
+		auto mi = points.find(height);
+		if (mi != points.end())
+			occurrence = (*mi).second;
+		occurrence++;
+		points[height] = occurrence;
+	}
+
+private:
+	std::map<int, int> points;
+	size_t maxSize;
+	size_t maxAvg;
+};
+
+
 /**
  * Maintain validation-specific state about nodes, protected by cs_main, instead
  * by CNode's own locks. This simplifies asynchronous operation, where
@@ -298,6 +374,8 @@ struct CNodeState {
     int nBlocksInFlight;
     //! Whether we consider this a preferred download peer.
     bool fPreferredDownload;
+
+	CNodeBlocks nodeBlocks;
 
     CNodeState()
     {
@@ -3424,6 +3502,26 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
     if (block.GetHash() != Params().HashGenesisBlock() && !CheckWork(block, pindexPrev))
         return false;
 
+	bool isPoS = false;
+
+	if (block.IsProofOfStake()) {
+
+		isPoS = true;
+		uint256 hashProofOfStake = 0;
+		unique_ptr<CStakeInput> stake;
+
+		if (!CheckProofOfStake(block, hashProofOfStake, stake))
+			return state.DoS(100, error("%s: proof of stake check failed", __func__));
+
+		if (!stake)
+			return error("%s: null stake ptr", __func__);
+
+		uint256 hash = block.GetHash();
+
+		if (!mapProofOfStake.count(hash)) // add to mapProofOfStake
+			mapProofOfStake.insert(make_pair(hash, hashProofOfStake));
+	}
+
     if (!AcceptBlockHeader(block, state, &pindex))
         return false;
 
@@ -3443,6 +3541,44 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 
     int nHeight = pindex->nHeight;
 
+	if (isPoS) {
+		LOCK(cs_main);
+
+		// Check whether is a fork or not
+		if (pindexPrev != nullptr && !chainActive.Contains(pindexPrev)) {
+
+			// Start at the block we're adding on to
+			CBlockIndex *prev = pindexPrev;
+			CTransaction &stakeTxIn = block.vtx[1];
+			CBlock bl;
+			// Go backwards on the forked chain up to the split
+			do {
+				if (!ReadBlockFromDisk(bl, prev))
+					// Previous block not on disk
+					return error("%s: previous block %s not on disk", __func__, prev->GetBlockHash().GetHex());
+
+
+				// Loop through every input from said block
+				for (CTransaction t : bl.vtx) {
+					for (CTxIn in : t.vin) {
+						// Loop through every input of the staking tx
+						for (CTxIn stakeIn : stakeTxIn.vin) {
+							// if it's already spent
+							if (stakeIn.prevout == in.prevout) {
+								// reject the block
+								return state.DoS(100,
+									error("%s: input already spent on a previous block", __func__));
+							}
+						}
+					}
+				}
+				prev = prev->pprev;
+
+			} while (!chainActive.Contains(prev));
+		}
+	}
+
+	/*
 	if (ActiveProtocol() >= FAKE_STAKE_VERSION) {
 
 		if (block.IsProofOfStake()) {
@@ -3493,6 +3629,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 			}
 		}
 	}
+	*/
 
     // Write block to history file
     try {
@@ -3578,15 +3715,11 @@ void CBlockIndex::BuildSkip()
 bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp)
 {
     // Preliminary checks
+	int64_t nStartTime = GetTimeMillis();
     bool checked = CheckBlock(*pblock, state);
 
-    // ppcoin: check proof-of-stake
-    // Limited duplicity on stake: prevents block flood attack
-    // Duplicate stake allowed only when there is orphan child block
-    //if (pblock->IsProofOfStake() && setStakeSeen.count(pblock->GetProofOfStake())/* && !mapOrphanBlocksByPrev.count(hash)*/)
-    //    return error("ProcessNewBlock() : duplicate proof-of-stake (%s, %d) for block %s", pblock->GetProofOfStake().first.ToString().c_str(), pblock->GetProofOfStake().second, pblock->GetHash().ToString().c_str());
 
-    // NovaCoin: check proof-of-stake block signature
+    /*// NovaCoin: check proof-of-stake block signature
     if (!pblock->CheckBlockSignature())
         return error("ProcessNewBlock() : bad proof-of-stake block signature");
 
@@ -3616,11 +3749,60 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
         bool ret = AcceptBlock(*pblock, state, &pindex, dbp);
         if (pindex && pfrom) {
             mapBlockSource[pindex->GetBlockHash()] = pfrom->GetId();
-        }
+        }*/
+
+
+
+	//New from pivx 3.2
+	
+	if (!CheckBlockSignature(*pblock))
+		return error("ProcessNewBlock() : bad proof-of-stake block signature");
+	if (pblock->GetHash() != Params().HashGenesisBlock() && pfrom != NULL) {
+		//if we get this far, check if the prev block is our prev block, if not then request sync and return false
+		BlockMap::iterator mi = mapBlockIndex.find(pblock->hashPrevBlock);
+		if (mi == mapBlockIndex.end()) {
+			pfrom->PushMessage("getblocks", chainActive.GetLocator(), uint256(0));
+			return false;
+		}
+	}
+	{
+		LOCK(cs_main);   // Replaces the former TRY_LOCK loop because busy waiting wastes too much resources
+		MarkBlockAsReceived(pblock->GetHash());
+		if (!checked) {
+			return error("%s : CheckBlock FAILED for block %s", __func__, pblock->GetHash().GetHex());
+		}
+		// Store to disk
+		CBlockIndex* pindex = NULL;
+		bool ret = AcceptBlock(*pblock, state, &pindex, dbp, checked);
+		if (pindex && pfrom) {
+			mapBlockSource[pindex->GetBlockHash()] = pfrom->GetId();
+		}
+
+
         CheckBlockIndex();
-        if (!ret)
-            return error("%s : AcceptBlock FAILED", __func__);
-        break;
+       // if (!ret)
+         //   return error("%s : AcceptBlock FAILED", __func__);
+        //break;
+
+		if (!ret) {
+			// Check spamming
+			if (GetBoolArg("-blockspamfilter", DEFAULT_BLOCK_SPAM_FILTER)) {
+				CNodeState *nodestate = State(pfrom->GetId());
+				nodestate->nodeBlocks.onBlockReceived(pindex->nHeight);
+				bool nodeStatus = true;
+				// UpdateState will return false if the node is attacking us or update the score and return true.
+				nodeStatus = nodestate->nodeBlocks.updateState(state, nodeStatus);
+				int nDoS = 0;
+				if (state.IsInvalid(nDoS)) {
+					if (nDoS > 0)
+						Misbehaving(pfrom->GetId(), nDoS);
+					nodeStatus = false;
+				}
+				if (!nodeStatus)
+					return error("%s : AcceptBlock FAILED - block spam protection", __func__);
+			}
+			return error("%s : AcceptBlock FAILED", __func__);
+		}
     }
 
     if (!ActivateBestChain(state, pblock))
