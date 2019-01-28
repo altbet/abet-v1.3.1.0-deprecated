@@ -3637,18 +3637,18 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 
 			// Inputs
 			std::vector<CTxIn> pivInputs;
-			std::vector<CTxIn> zPIVInputs;
+			//std::vector<CTxIn> zPIVInputs;
 
-			for (CTxIn stakeIn : stakeTxIn.vin) {
-				if (stakeIn.scriptSig.IsZerocoinSpend()) {
-					zPIVInputs.push_back(stakeIn);
-				}
-				else {
+			//for (CTxIn stakeIn : stakeTxIn.vin) {
+			//	if (stakeIn.scriptSig.IsZerocoinSpend()) {
+			//		zPIVInputs.push_back(stakeIn);
+			//	}
+			//	else {
 					pivInputs.push_back(stakeIn);
-				}
-			}
+			//	}
+			//}
 			const bool hasPIVInputs = !pivInputs.empty();
-			const bool hasZPIVInputs = !zPIVInputs.empty();
+			//const bool hasZPIVInputs = !zPIVInputs.empty();
 			vector<CBigNum> vBlockSerials;
 			CBlock bl;
 			// Go backwards on the forked chain up to the split
@@ -3662,10 +3662,10 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 				for (CTransaction t : bl.vtx) {
 					for (CTxIn in : t.vin) {
 						// Loop through every input of the staking tx
-						for (CTxIn stakeIn : pivInputs) {
+						for (CTxIn stakeIn : altbetInputs) {
 							// if it's already spent
 							// First regular staking check
-							if (hasPIVInputs) {
+							if (hasALTBETInputs) {
 								if (stakeIn.prevout == in.prevout) {
 									// reject the block
 									return state.DoS(100,
@@ -3674,12 +3674,12 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 								}
 							}
 							// Second, if there is zPoS staking then store the serials for later check
-							if (hasZPIVInputs) {
-								if (in.scriptSig.IsZerocoinSpend()) {
-									CoinSpend spend = TxInToZerocoinSpend(in);
-									vBlockSerials.push_back(spend.getCoinSerialNumber());
-								}
-							}
+							//if (hasZPIVInputs) {
+							//	if (in.scriptSig.IsZerocoinSpend()) {
+							//		CoinSpend spend = TxInToZerocoinSpend(in);
+							//		vBlockSerials.push_back(spend.getCoinSerialNumber());
+							//	}
+							//}
 						}
 					}
 				}
@@ -3692,7 +3692,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 			int splitHeight = prev->nHeight;
 
 			// Now that this loop if completed. Check if we have zPIV inputs.
-			if (hasZPIVInputs) {
+			/*if (hasZPIVInputs) {
 
 				for (CTxIn zPivInput : zPIVInputs) {
 					CoinSpend spend = TxInToZerocoinSpend(zPivInput);
@@ -3733,7 +3733,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 					if (!spend.Verify(accumulator))
 						return state.DoS(100, error("%s: zerocoin spend did not verify", __func__));
 				}
-			}
+			}*/
 		}
 
 		// If the stake is not a zPoS then let's check if the inputs were spent on the main chain
@@ -3881,9 +3881,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
 			mapBlockSource[pindex->GetBlockHash()] = pfrom->GetId();
 		}
 		CheckBlockIndex();
-		//if (!ret)
-
-		if (!ret) 
+		if (!ret) {
 			// Check spamming
 			if (pfrom && GetBoolArg("-blockspamfilter", DEFAULT_BLOCK_SPAM_FILTER)) {
 				CNodeState *nodestate = State(pfrom->GetId());
@@ -3902,9 +3900,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
 					return error("%s : AcceptBlock FAILED - block spam protection", __func__);
 			}
 			return error("%s : AcceptBlock FAILED", __func__);
-			//break;
-		
-	}
+		}
 
 	if (!ActivateBestChain(state, pblock))
 		return error("%s : ActivateBestChain failed", __func__);
@@ -3930,7 +3926,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
 	LogPrintf("%s : ACCEPTED\n", __func__);
 
 	return true;
-}
+	}
 
 bool TestBlockValidity(CValidationState& state, const CBlock& block, CBlockIndex* const pindexPrev, bool fCheckPOW, bool fCheckMerkleRoot)
 {
