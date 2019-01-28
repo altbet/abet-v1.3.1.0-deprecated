@@ -265,7 +265,7 @@ struct CBlockReject {
     uint256 hashBlock;
 };
 
-
+/*
 class CNodeBlocks
 {
 public:
@@ -338,7 +338,7 @@ private:
 	std::map<int, int> points;
 	size_t maxSize;
 	size_t maxAvg;
-};
+};*/
 
 
 /**
