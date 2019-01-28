@@ -3541,10 +3541,10 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 
     int nHeight = pindex->nHeight;
 
-	//if (isPoS) {
+	/*if (isPoS) {
 		//LOCK(cs_main);
 
-		// Check whether is a fork or not
+		 Check whether is a fork or not
 		if (pindexPrev != nullptr && !chainActive.Contains(pindexPrev)) {
 
 			// Start at the block we're adding on to
@@ -3576,9 +3576,9 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 
 			} while (!chainActive.Contains(prev));
 		}
-	//}
+	}*/
 
-	/*
+	
 	if (ActiveProtocol() >= FAKE_STAKE_VERSION) {
 
 		if (block.IsProofOfStake()) {
@@ -3629,7 +3629,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 			}
 		}
 	}
-	*/
+	
 
     // Write block to history file
     try {
