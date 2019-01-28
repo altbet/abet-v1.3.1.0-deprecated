@@ -3541,8 +3541,8 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 
     int nHeight = pindex->nHeight;
 
-	if (isPoS) {
-		LOCK(cs_main);
+	//if (isPoS) {
+		//LOCK(cs_main);
 
 		// Check whether is a fork or not
 		if (pindexPrev != nullptr && !chainActive.Contains(pindexPrev)) {
@@ -3576,7 +3576,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 
 			} while (!chainActive.Contains(prev));
 		}
-	}
+	//}
 
 	/*
 	if (ActiveProtocol() >= FAKE_STAKE_VERSION) {
