@@ -3535,7 +3535,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 					}
 
 					// go to the parent block
-					last = pindexPrev->pprev;
+					prev = prev->pprev;
 				}
 			}
 		}

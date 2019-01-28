@@ -28,7 +28,7 @@ static const int MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT = 72001;
 static const int MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT = 72002;
 
 //! In this version, "Fake Stake" vulnerability mitigations were introduced.
-static const int FAKE_STAKE_VERSION = 70002;
+static const int FAKE_STAKE_VERSION = 72002;
 
 //! nTime field added to CAddress, starting with this version;
 //! if possible, avoid requesting addresses nodes older than this
