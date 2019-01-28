@@ -3540,44 +3540,6 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
     }
 
     int nHeight = pindex->nHeight;
-
-	/*if (isPoS) {
-		//LOCK(cs_main);
-
-		 Check whether is a fork or not
-		if (pindexPrev != nullptr && !chainActive.Contains(pindexPrev)) {
-
-			// Start at the block we're adding on to
-			CBlockIndex *prev = pindexPrev;
-			CTransaction &stakeTxIn = block.vtx[1];
-			CBlock bl;
-			// Go backwards on the forked chain up to the split
-			do {
-				if (!ReadBlockFromDisk(bl, prev))
-					// Previous block not on disk
-					return error("%s: previous block %s not on disk", __func__, prev->GetBlockHash().GetHex());
-
-
-				// Loop through every input from said block
-				for (CTransaction t : bl.vtx) {
-					for (CTxIn in : t.vin) {
-						// Loop through every input of the staking tx
-						for (CTxIn stakeIn : stakeTxIn.vin) {
-							// if it's already spent
-							if (stakeIn.prevout == in.prevout) {
-								// reject the block
-								return state.DoS(100,
-									error("%s: input already spent on a previous block", __func__));
-							}
-						}
-					}
-				}
-				prev = prev->pprev;
-
-			} while (!chainActive.Contains(prev));
-		}
-	}*/
-
 	
 	if (ActiveProtocol() >= FAKE_STAKE_VERSION) {
 
@@ -3714,48 +3676,19 @@ void CBlockIndex::BuildSkip()
 
 bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDiskBlockPos* dbp)
 {
-    // Preliminary checks
-	//int64_t nStartTime = GetTimeMillis();
-    bool checked = CheckBlock(*pblock, state);
+	// Preliminary checks
+	bool checked = CheckBlock(*pblock, state);
 
+	// ppcoin: check proof-of-stake
+	// Limited duplicity on stake: prevents block flood attack
+	// Duplicate stake allowed only when there is orphan child block
+	//if (pblock->IsProofOfStake() && setStakeSeen.count(pblock->GetProofOfStake())/* && !mapOrphanBlocksByPrev.count(hash)*/)
+	//    return error("ProcessNewBlock() : duplicate proof-of-stake (%s, %d) for block %s", pblock->GetProofOfStake().first.ToString().c_str(), pblock->GetProofOfStake().second, pblock->GetHash().ToString().c_str());
 
-    /*// NovaCoin: check proof-of-stake block signature
-    if (!pblock->CheckBlockSignature())
-        return error("ProcessNewBlock() : bad proof-of-stake block signature");
-
-    if (pblock->GetHash() != Params().HashGenesisBlock() && pfrom != NULL) {
-        //if we get this far, check if the prev block is our prev block, if not then request sync and return false
-        BlockMap::iterator mi = mapBlockIndex.find(pblock->hashPrevBlock);
-        if (mi == mapBlockIndex.end()) {
-            pfrom->PushMessage("getblocks", chainActive.GetLocator(), uint256(0));
-            return false;
-        }
-    }
-
-    while (true) {
-        TRY_LOCK(cs_main, lockMain);
-        if (!lockMain) {
-            MilliSleep(50);
-            continue;
-        }
-
-        MarkBlockAsReceived(pblock->GetHash());
-        if (!checked) {
-            return error("%s : CheckBlock FAILED", __func__);
-        }
-
-        // Store to disk
-        CBlockIndex* pindex = NULL;
-        bool ret = AcceptBlock(*pblock, state, &pindex, dbp);
-        if (pindex && pfrom) {
-            mapBlockSource[pindex->GetBlockHash()] = pfrom->GetId();
-        }*/
-
-
-
-	//New from pivx 3.2	
-	if (!CheckBlockSignature(*pblock))
+	// NovaCoin: check proof-of-stake block signature
+	if (!pblock->CheckBlockSignature())
 		return error("ProcessNewBlock() : bad proof-of-stake block signature");
+
 	if (pblock->GetHash() != Params().HashGenesisBlock() && pfrom != NULL) {
 		//if we get this far, check if the prev block is our prev block, if not then request sync and return false
 		BlockMap::iterator mi = mapBlockIndex.find(pblock->hashPrevBlock);
@@ -3765,70 +3698,54 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
 		}
 	}
 
-	{
-		LOCK(cs_main);   // Replaces the former TRY_LOCK loop because busy waiting wastes too much resources
+	while (true) {
+		TRY_LOCK(cs_main, lockMain);
+		if (!lockMain) {
+			MilliSleep(50);
+			continue;
+		}
+
 		MarkBlockAsReceived(pblock->GetHash());
 		if (!checked) {
-			return error("%s : CheckBlock FAILED for block %s", __func__, pblock->GetHash().GetHex());
+			return error("%s : CheckBlock FAILED", __func__);
 		}
+
 		// Store to disk
-		CBlockIndex* pindex = nullptr;
-		bool ret = AcceptBlock(*pblock, state, &pindex, dbp, checked);
+		CBlockIndex* pindex = NULL;
+		bool ret = AcceptBlock(*pblock, state, &pindex, dbp);
 		if (pindex && pfrom) {
 			mapBlockSource[pindex->GetBlockHash()] = pfrom->GetId();
 		}
-
-
-        CheckBlockIndex();
-       // if (!ret)
-         //   return error("%s : AcceptBlock FAILED", __func__);
-        //break;
-
-		if (!ret) {
-			// Check spamming
-			if (pfrom && GetBoolArg("-blockspamfilter", DEFAULT_BLOCK_SPAM_FILTER)) {
-				CNodeState *nodestate = State(pfrom->GetId());
-				nodestate->nodeBlocks.onBlockReceived(pindex->nHeight);
-				bool nodeStatus = true;
-				// UpdateState will return false if the node is attacking us or update the score and return true.
-				nodeStatus = nodestate->nodeBlocks.updateState(state, nodeStatus);
-				int nDoS = 0;
-				if (state.IsInvalid(nDoS)) {
-					if (nDoS > 0)
-						Misbehaving(pfrom->GetId(), nDoS);
-					nodeStatus = false;
-				}
-				if (!nodeStatus)
-					return error("%s : AcceptBlock FAILED - block spam protection", __func__);
-			}
+		CheckBlockIndex();
+		if (!ret)
 			return error("%s : AcceptBlock FAILED", __func__);
+		break;
+	}
+
+	if (!ActivateBestChain(state, pblock))
+		return error("%s : ActivateBestChain failed", __func__);
+
+	if (!fLiteMode) {
+		if (masternodeSync.RequestedMasternodeAssets > MASTERNODE_SYNC_LIST) {
+			obfuScationPool.NewBlock();
+			masternodePayments.ProcessBlock(GetHeight() + 10);
+			budget.NewBlock();
 		}
-    }
+	}
 
-    if (!ActivateBestChain(state, pblock))
-        return error("%s : ActivateBestChain failed", __func__);
+	if (pwalletMain) {
+		// If turned on MultiSend will send a transaction (or more) on the after maturity of a stake
+		if (pwalletMain->isMultiSendEnabled())
+			pwalletMain->MultiSend();
 
-    if (!fLiteMode) {
-        if (masternodeSync.RequestedMasternodeAssets > MASTERNODE_SYNC_LIST) {
-            obfuScationPool.NewBlock();
-            masternodePayments.ProcessBlock(GetHeight() + 10);
-            budget.NewBlock();
-        }
-    }
+		//If turned on Auto Combine will scan wallet for dust to combine
+		if (pwalletMain->fCombineDust)
+			pwalletMain->AutoCombineDust();
+	}
 
-    if (pwalletMain) {
-        // If turned on MultiSend will send a transaction (or more) on the after maturity of a stake
-        if (pwalletMain->isMultiSendEnabled())
-            pwalletMain->MultiSend();
+	LogPrintf("%s : ACCEPTED\n", __func__);
 
-        //If turned on Auto Combine will scan wallet for dust to combine
-        if (pwalletMain->fCombineDust)
-            pwalletMain->AutoCombineDust();
-    }
-
-    LogPrintf("%s : ACCEPTED\n", __func__);
-
-    return true;
+	return true;
 }
 
 bool TestBlockValidity(CValidationState& state, const CBlock& block, CBlockIndex* const pindexPrev, bool fCheckPOW, bool fCheckMerkleRoot)
