@@ -3719,7 +3719,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
     bool checked = CheckBlock(*pblock, state);
 
 
-    // NovaCoin: check proof-of-stake block signature
+    /*// NovaCoin: check proof-of-stake block signature
     if (!pblock->CheckBlockSignature())
         return error("ProcessNewBlock() : bad proof-of-stake block signature");
 
@@ -3749,11 +3749,11 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
         bool ret = AcceptBlock(*pblock, state, &pindex, dbp);
         if (pindex && pfrom) {
             mapBlockSource[pindex->GetBlockHash()] = pfrom->GetId();
-        }
+        }*/
 
 
 
-	/*//New from pivx 3.2	
+	//New from pivx 3.2	
 	if (!CheckBlockSignature(*pblock))
 		return error("ProcessNewBlock() : bad proof-of-stake block signature");
 	if (pblock->GetHash() != Params().HashGenesisBlock() && pfrom != NULL) {
@@ -3776,7 +3776,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
 		bool ret = AcceptBlock(*pblock, state, &pindex, dbp, checked);
 		if (pindex && pfrom) {
 			mapBlockSource[pindex->GetBlockHash()] = pfrom->GetId();
-		}*/
+		}
 
 
         CheckBlockIndex();
