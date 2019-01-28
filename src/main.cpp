@@ -3661,7 +3661,7 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
 		}
 
 		// Store to disk
-		CBlockIndex* pindex = NULL;
+		CBlockIndex* pindex = nullptr;
 		bool ret = AcceptBlock(*pblock, state, &pindex, dbp);
 		if (pindex && pfrom) {
 			mapBlockSource[pindex->GetBlockHash()] = pfrom->GetId();
