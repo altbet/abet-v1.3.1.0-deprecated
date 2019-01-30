@@ -111,7 +111,7 @@ public:
         nMaturity = 15;
         nMasternodeCountDrift = 20;
         nMasternodeCollateralLimit = 1000;
-        nModifierUpdateBlock = 615800;
+        nModifierUpdateBlock = 50;
         nMaxMoneyOut = 21000000 * COIN;
         const char* pszTimestamp = "Winner, winner chicken dinner.";
 

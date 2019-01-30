@@ -113,7 +113,7 @@ Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDe
     result.push_back(Pair("height", blockindex->nHeight));
     result.push_back(Pair("version", block.nVersion));
     result.push_back(Pair("merkleroot", block.hashMerkleRoot.GetHex()));
-	result.push_back(Pair("modifier", strprintf("%016" PRI64x, blockindex->nStakeModifier)));
+	//result.push_back(Pair("modifier", strprintf("%016" PRI64x, blockindex->nStakeModifier)));
 	result.push_back(Pair("modifierchecksum", strprintf("%08x", blockindex->nStakeModifierChecksum)));
     Array txs;
     BOOST_FOREACH (const CTransaction& tx, block.vtx) {
