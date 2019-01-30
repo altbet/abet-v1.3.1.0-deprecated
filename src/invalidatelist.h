@@ -27,6 +27,8 @@
 #include "uint256.h"
 #include "undo.h"
 #include "main.h"
+#include <vector>
+#include <algorithm>
 
 #include <algorithm>
 #include <exception>

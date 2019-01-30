@@ -33,6 +33,8 @@
 #include "utilmoneystr.h"
 
 #include <sstream>
+#include <vector>
+#include <algorithm>
 
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/filesystem.hpp>
