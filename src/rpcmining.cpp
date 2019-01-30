@@ -1,7 +1,8 @@
 // Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
-// Copyright (c) 2015-2018 The PIVX developers
+// Copyright (c) 2015-2017 The PIVX developers
+// Copyright (c) 2017-2019 The altbet developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -268,7 +269,7 @@ UniValue getmininginfo(const UniValue& params, bool fHelp)
 }
 
 
-// NOTE: Unlike wallet RPC (which use BTC values), mining RPCs follow GBT (BIP 22) in using satoshi amounts
+// NOTE: Unlike wallet RPC (which use altbet values), mining RPCs follow GBT (BIP 22) in using satoshi amounts
 UniValue prioritisetransaction(const UniValue& params, bool fHelp)
 {
 	if (fHelp || params.size() != 3)
@@ -447,7 +448,7 @@ UniValue getblocktemplate(const UniValue& params, bool fHelp)
 	if (!lpval.isNull()) {
 		// Wait to respond until either the best block changes, OR a minute has passed and there are more transactions
 		uint256 hashWatchedChain;
-		boost::system_time checktxtime;
+		std::chrono::steady_clock::time_point checktxtime;
 		unsigned int nTransactionsUpdatedLastLP;
 
 		if (lpval.isStr()) {
@@ -466,15 +467,16 @@ UniValue getblocktemplate(const UniValue& params, bool fHelp)
 		// Release the wallet and main lock while waiting
 		LEAVE_CRITICAL_SECTION(cs_main);
 		{
-			checktxtime = boost::get_system_time() + boost::posix_time::minutes(1);
+			checktxtime = std::chrono::steady_clock::now() + std::chrono::minutes(1);
 
-			boost::unique_lock<boost::mutex> lock(csBestBlock);
+			WaitableLock lock(csBestBlock);
 			while (chainActive.Tip()->GetBlockHash() == hashWatchedChain && IsRPCRunning()) {
-				if (!cvBlockChange.timed_wait(lock, checktxtime)) {
+				if (cvBlockChange.wait_until(lock, checktxtime) == std::cv_status::timeout)
+				{
 					// Timeout: Check transactions for update
 					if (mempool.GetTransactionsUpdated() != nTransactionsUpdatedLastLP)
 						break;
-					checktxtime += boost::posix_time::seconds(10);
+					checktxtime += std::chrono::seconds(10);
 				}
 			}
 		}
@@ -576,8 +578,8 @@ UniValue getblocktemplate(const UniValue& params, bool fHelp)
 	result.push_back(Pair("mintime", (int64_t)pindexPrev->GetMedianTimePast() + 1));
 	result.push_back(Pair("mutable", aMutable));
 	result.push_back(Pair("noncerange", "00000000ffffffff"));
-	//    result.push_back(Pair("sigoplimit", (int64_t)MAX_BLOCK_SIGOPS));
-	//    result.push_back(Pair("sizelimit", (int64_t)MAX_BLOCK_SIZE));
+	result.push_back(Pair("sigoplimit", (int64_t)MAX_BLOCK_SIGOPS));
+	result.push_back(Pair("sizelimit", (int64_t)MAX_BLOCK_SIZE));
 	result.push_back(Pair("curtime", pblock->GetBlockTime()));
 	result.push_back(Pair("bits", strprintf("%08x", pblock->nBits)));
 	result.push_back(Pair("height", (int64_t)(pindexPrev->nHeight + 1)));
