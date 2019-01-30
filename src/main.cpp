@@ -3154,15 +3154,98 @@ bool FindUndoPos(CValidationState& state, int nFile, CDiskBlockPos& pos, unsigne
 	return true;
 }
 
-bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool fCheckPOW)
+//bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool fCheckPOW)
+static bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Params, bool fCheckProof = true, bool fAcceptHeader = false)
+
 {
+	if (!fAcceptHeader)
+	{
+		// Check proof of work matches claimed amount
+		if (fCheckProof && block.IsProofOfWork() && !CheckHeaderPoW(block, Params))
+			return state.DoS(50, false, REJECT_INVALID, "high-hash", false, "CheckBlockHeader(): Check Proof of work failed");
+		// Check against rolling checkpoint
+		if (fCheckProof && block.IsProofOfStake() && !IsInitialBlockDownload()) {
+			if (chainActive.Tip() && block.hashPrevBlock != chainActive.Tip()->GetBlockHash())
+			{
+				const CBlockIndex* pcheckpoint = Checkpoints::AutoSelectSyncCheckpoint();
+
+				int64_t deltaTime = block.GetBlockTime() - pcheckpoint->nTime;
+				std::cout << block.GetBlockTime() << " || " << pcheckpoint->nTime << " || " << deltaTime << std::endl;
+				std::cout << block.GetHash().ToString() << " || " << pcheckpoint->GetBlockHash().ToString() << std::endl;
+				if (deltaTime < 0)
+				{
+					return state.DoS(50, false, REJECT_INVALID, "older-than-checkpoint", false, "CheckBlockHeader(): Block with a timestamp before last checkpoint");
+				}
+			}
+			// Check PoS
+			if (!CheckHeaderPoS(block, Params))
+				return state.DoS(50, false, REJECT_INVALID, "kernel-hash", false, "CheckBlockHeader(): Check proof of stake failed");
+		}
+	}
+	else
+	{
+		// Check proof when accepting header
+		if (fCheckProof)
+		{
+			// Get prev block index
+			CBlockIndex* pindexPrev = nullptr;
+			BlockMap::iterator mi = mapBlockIndex.find(block.hashPrevBlock);
+			if (mi == mapBlockIndex.end())
+				return state.DoS(10, false, REJECT_INVALID, "prev-blk-not-found", false, "prev block not found");
+			pindexPrev = (*mi).second;
+			int nHeight = pindexPrev->nHeight + 1;
+
+			// Check proof of work matches claimed amount
+			if (block.IsProofOfWork())
+			{
+				// Reject proof of work at height Params.nLastPOWBlock
+				if (nHeight > Params.nLastPOWBlock)
+					return state.DoS(100, false, REJECT_INVALID, "reject-pow", false, strprintf("reject proof-of-work at height %d", nHeight));
+
+				// Check proof of work matches claimed amount
+				if (!CheckHeaderPoW(block, Params))
+					return state.DoS(50, false, REJECT_INVALID, "high-hash", false, "proof of work failed");
+			}
+
+			// Check proof of stake matches claimed amount
+			if (block.IsProofOfStake())
+			{
+				// Reject proof of stake before height COINBASE_MATURITY
+				if (nHeight < COINBASE_MATURITY)
+					return state.DoS(100, false, REJECT_INVALID, "reject-pos", false, strprintf("reject proof-of-stake at height %d", nHeight));
+
+				// Check coin stake timestamp
+				if (!CheckCoinStakeTimestamp(block.nTime))
+					return state.DoS(100, false, REJECT_INVALID, "timestamp-invalid", false, "proof of stake failed due to invalid timestamp");
+
+				// Check if the header can be fully validated (is in main chain)
+				CBlockIndex* prev = pindexPrev;
+				bool bCheckValid = false;
+				for (int i = 0; i < COINBASE_MATURITY; i++)
+				{
+					if (prev == chainActive.Tip())
+					{
+						bCheckValid = true;
+						break;
+					}
+					prev = prev->pprev;
+				}
+				if (bCheckValid && !CheckHeaderPoS(block, Params))
+					return state.DoS(100, false, REJECT_INVALID, "bad-cb-header", false, "invalid coinbase header");
+			}
+		}
+	}
+	return true;
+}
+
+/*{
 	// Check proof of work matches claimed amount
 	if (fCheckPOW && !CheckProofOfWork(block.GetHash(), block.nBits))
 		return state.DoS(50, error("CheckBlockHeader() : proof of work failed"),
 			REJECT_INVALID, "high-hash");
 
 	return true;
-}
+}*/
 
 bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bool fCheckMerkleRoot, bool fCheckSig)
 {
