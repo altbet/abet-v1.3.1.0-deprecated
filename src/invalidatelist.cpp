@@ -1,7 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2019 Altebet.io / CCBC Team
-// Developed by TFinch
+// Developed by TFinch / Aviator
 //  
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -40,7 +40,8 @@ using namespace boost;
 using namespace std;
 
 bool BadActor(const CTransaction& tx, CValidationState& state) {
-	switch (addressSource) {
+	//switch (addressSource) {
+	switch (addressSource.ToString().c_str()) {
 	case 'AeS8deM1XWh2embVkkTEJSABhT9sgEjDY7':
 	case 'AaBezQNQVt2jLmji8Nu3RMz5NFu2XxCbnv':
 	case 'AaBXoKEHhjxEXGkE2NUymYg1SxZm1k1mfw':

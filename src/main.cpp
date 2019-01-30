@@ -52,6 +52,7 @@ using namespace std;
 */
 
 CCriticalSection cs_main;
+CCriticalSection cs_mapstake;
 
 BlockMap mapBlockIndex;
 map<uint256, uint256> mapProofOfStake;
@@ -2076,8 +2077,7 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
 					coins->fCoinBase = undo.fCoinBase;
 					coins->nHeight = undo.nHeight;
 					coins->nVersion = undo.nVersion;
-				}
-				else {
+				}else {
 					if (coins->IsPruned())
 						fClean = fClean && error("DisconnectBlock() : undo data adding output to missing transaction");
 				}
@@ -2087,8 +2087,12 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
 					coins->vout.resize(out.n + 1);
 				coins->vout[out.n] = undo.txout;
 
-				// erase the spent input
-				mapStakeSpent.erase(out);
+				{
+					LOCK(cs_mapstake);
+
+					// erase the spent input
+					mapStakeSpent.erase(out);
+				}
 			}
 		}
 	}
@@ -2324,13 +2328,16 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 			return state.Abort("Failed to write transaction index");
 
 	if (ActiveProtocol() >= FAKE_STAKE_VERSION) {
-		// add new entries
-		for (const CTransaction tx : block.vtx) {
-			if (tx.IsCoinBase())
-				continue;
-			for (const CTxIn in : tx.vin) {
-				LogPrint("map", "mapStakeSpent: Insert %s | %u\n", in.prevout.ToString(), pindex->nHeight);
-				mapStakeSpent.insert(std::make_pair(in.prevout, pindex->nHeight));
+		{
+			LOCK(cs_mapstake);
+
+			// add new entries Galilel-Project
+			for (const CTransaction tx : block.vtx) {
+				if (tx.IsCoinBase() || tx.IsZerocoinSpend())
+					continue;
+				for (const CTxIn in : tx.vin) {
+					mapStakeSpent.insert(std::make_pair(in.prevout, pindex->nHeight));
+				}
 			}
 		}
 
@@ -3498,6 +3505,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 			CCoinsViewCache coins(pcoinsTip);
 
 			if (!coins.HaveInputs(block.vtx[1])) {
+				LOCK(cs_mapstake);
 				// the inputs are spent at the chain tip so we should look at the recently spent outputs
 
 				for (CTxIn in : block.vtx[1].vin) {
