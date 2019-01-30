@@ -50,7 +50,7 @@ double GetDifficulty(const CBlockIndex* blockindex)
 
     return dDiff;
 }
-/*
+
 Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool fPrintTransactionDetail)
 {
 	Object result;
@@ -97,9 +97,9 @@ Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool fPri
 	result.push_back(Pair("tx", txinfo));
 
 	return result;
-}*/
+}
 
-
+/*
 Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDetails = false)
 {
     Object result;
@@ -137,7 +137,7 @@ Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDe
         result.push_back(Pair("nextblockhash", pnext->GetBlockHash().GetHex()));
     return result;
 }
-
+*/
 
 Object blockHeaderToJSON(const CBlock& block, const CBlockIndex* blockindex)
 {

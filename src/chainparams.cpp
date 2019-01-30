@@ -114,6 +114,7 @@ public:
         nModifierUpdateBlock = 615800;
         nMaxMoneyOut = 21000000 * COIN;
         const char* pszTimestamp = "Winner, winner chicken dinner.";
+
         CMutableTransaction txNew;
         txNew.vin.resize(1);
         txNew.vout.resize(1);
