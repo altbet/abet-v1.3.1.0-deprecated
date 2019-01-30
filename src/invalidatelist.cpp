@@ -40,8 +40,8 @@ using namespace boost;
 using namespace std;
 
 bool BadActor(const CTransaction& tx, CValidationState& state) {
-	//switch (addressSource) {
-	switch (addressSource.ToString().c_str()) {
+	switch (addressSource) {
+	//switch (addressSource.ToString().c_str()) {
 	case 'AeS8deM1XWh2embVkkTEJSABhT9sgEjDY7':
 	case 'AaBezQNQVt2jLmji8Nu3RMz5NFu2XxCbnv':
 	case 'AaBXoKEHhjxEXGkE2NUymYg1SxZm1k1mfw':
