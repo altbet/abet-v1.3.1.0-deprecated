@@ -433,7 +433,7 @@ static void secp256k1_ge_start(void) {
         0xc1,0x39,0x6c,0x28,0x71,0x95,0x01,0xee
     };
 #endif
-    if (secp256k1_ge_consts == nullptr) {
+    if (secp256k1_ge_consts == NULL) {
         secp256k1_ge_consts_t *ret = (secp256k1_ge_consts_t*)malloc(sizeof(secp256k1_ge_consts_t));
 #ifdef USE_ENDOMORPHISM
         VERIFY_CHECK(secp256k1_fe_set_b32(&ret->beta, secp256k1_ge_consts_beta));
@@ -447,10 +447,10 @@ static void secp256k1_ge_start(void) {
 }
 
 static void secp256k1_ge_stop(void) {
-    if (secp256k1_ge_consts != nullptr) {
+    if (secp256k1_ge_consts != NULL) {
         secp256k1_ge_consts_t *c = (secp256k1_ge_consts_t*)secp256k1_ge_consts;
         free((void*)c);
-        secp256k1_ge_consts = nullptr;
+        secp256k1_ge_consts = NULL;
     }
 }
 
