@@ -39,7 +39,7 @@ typedef struct {
     secp256k1_fe_t order;
 } secp256k1_fe_consts_t;
 
-static const secp256k1_fe_consts_t *secp256k1_fe_consts = nullptr;
+static const secp256k1_fe_consts_t *secp256k1_fe_consts = NULL;
 
 /** Initialize field element precomputation data. */
 static void secp256k1_fe_start(void);
