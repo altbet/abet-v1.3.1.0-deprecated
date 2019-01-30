@@ -50,7 +50,7 @@ double GetDifficulty(const CBlockIndex* blockindex)
 
     return dDiff;
 }
-
+/*
 Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool fPrintTransactionDetail)
 {
 	Object result;
@@ -98,8 +98,8 @@ Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool fPri
 
 	return result;
 }
+*/
 
-/*
 Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDetails = false)
 {
     Object result;
@@ -113,7 +113,7 @@ Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDe
     result.push_back(Pair("height", blockindex->nHeight));
     result.push_back(Pair("version", block.nVersion));
     result.push_back(Pair("merkleroot", block.hashMerkleRoot.GetHex()));
-	//result.push_back(Pair("modifierchecksum", strprintf("%08x", blockindex->nStakeModifierChecksum)));
+	result.push_back(Pair("modifierchecksum", strprintf("%08x", blockindex->nStakeModifierChecksum)));
     Array txs;
     BOOST_FOREACH (const CTransaction& tx, block.vtx) {
         if (txDetails) {
@@ -137,7 +137,7 @@ Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDe
         result.push_back(Pair("nextblockhash", pnext->GetBlockHash().GetHex()));
     return result;
 }
-*/
+
 
 Object blockHeaderToJSON(const CBlock& block, const CBlockIndex* blockindex)
 {
