@@ -242,7 +242,7 @@ class InMemoryEnv : public EnvWrapper {
                                    SequentialFile** result) {
     MutexLock lock(&mutex_);
     if (file_map_.find(fname) == file_map_.end()) {
-      *result = NULL;
+      *result = nullptr;
       return Status::IOError(fname, "File not found");
     }
 
@@ -254,7 +254,7 @@ class InMemoryEnv : public EnvWrapper {
                                      RandomAccessFile** result) {
     MutexLock lock(&mutex_);
     if (file_map_.find(fname) == file_map_.end()) {
-      *result = NULL;
+      *result = nullptr;
       return Status::IOError(fname, "File not found");
     }
 

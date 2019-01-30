@@ -5786,7 +5786,7 @@ EOF
       /* otherwise ... */
       newargz[++newargc] = xstrdup (argv[i]);
     }
-  newargz[++newargc] = NULL;
+  newargz[++newargc] = nullptr;
 
 EOF
 	    cat <<EOF
@@ -5798,7 +5798,7 @@ EOF
   lt_debugprintf (__FILE__, __LINE__, "(main) program_name: %s\n", program_name);
 
   tmp_pathspec = find_executable (argv[0]);
-  if (tmp_pathspec == NULL)
+  if (tmp_pathspec == nullptr)
     lt_fatal (__FILE__, __LINE__, "couldn't find %s", argv[0]);
   lt_debugprintf (__FILE__, __LINE__,
                   "(main) found exe (before symlink chase) at: %s\n",
@@ -5852,7 +5852,7 @@ EOF
   /* DO want the lt- prefix here if it exists, so use target_name */
   lt_argv_zero = lt_extend_str (tmp_pathspec, target_name, 1);
   XFREE (tmp_pathspec);
-  tmp_pathspec = NULL;
+  tmp_pathspec = nullptr;
 EOF
 
 	    case $host_os in
@@ -5860,11 +5860,11 @@ EOF
 	    cat <<"EOF"
   {
     char* p;
-    while ((p = strchr (newargz[0], '\\')) != NULL)
+    while ((p = strchr (newargz[0], '\\')) != nullptr)
       {
 	*p = '/';
       }
-    while ((p = strchr (lt_argv_zero, '\\')) != NULL)
+    while ((p = strchr (lt_argv_zero, '\\')) != nullptr)
       {
 	*p = '/';
       }
@@ -5939,7 +5939,7 @@ char *
 xstrdup (const char *string)
 {
   return string ? strcpy ((char *) xmalloc (strlen (string) + 1),
-			  string) : NULL;
+			  string) : nullptr;
 }
 
 const char *
@@ -5995,7 +5995,7 @@ make_executable (const char *path)
 }
 
 /* Searches for the full path of the wrapper.  Returns
-   newly allocated full path name if found, NULL otherwise
+   newly allocated full path name if found, nullptr otherwise
    Does not chase symlinks, even on platforms that support them.
 */
 char *
@@ -6012,8 +6012,8 @@ find_executable (const char *wrapper)
   lt_debugprintf (__FILE__, __LINE__, "(find_executable): %s\n",
                   nonempty (wrapper));
 
-  if ((wrapper == NULL) || (*wrapper == '\0'))
-    return NULL;
+  if ((wrapper == nullptr) || (*wrapper == '\0'))
+    return nullptr;
 
   /* Absolute path? */
 #if defined HAVE_DOS_BASED_FILE_SYSTEM
@@ -6048,7 +6048,7 @@ find_executable (const char *wrapper)
     {
       /* no slashes; search PATH */
       const char *path = getenv ("PATH");
-      if (path != NULL)
+      if (path != nullptr)
 	{
 	  for (p = path; *p; p = p_next)
 	    {
@@ -6062,7 +6062,7 @@ find_executable (const char *wrapper)
 	      if (p_len == 0)
 		{
 		  /* empty path: current directory */
-		  if (getcwd (tmp, LT_PATHMAX) == NULL)
+		  if (getcwd (tmp, LT_PATHMAX) == nullptr)
 		    lt_fatal (__FILE__, __LINE__, "getcwd failed: %s",
                               nonnull (strerror (errno)));
 		  tmp_len = strlen (tmp);
@@ -6088,7 +6088,7 @@ find_executable (const char *wrapper)
       /* not found in PATH; assume curdir */
     }
   /* Relative path | not found in path: prepend cwd */
-  if (getcwd (tmp, LT_PATHMAX) == NULL)
+  if (getcwd (tmp, LT_PATHMAX) == nullptr)
     lt_fatal (__FILE__, __LINE__, "getcwd failed: %s",
               nonnull (strerror (errno)));
   tmp_len = strlen (tmp);
@@ -6100,7 +6100,7 @@ find_executable (const char *wrapper)
   if (check_executable (concat_name))
     return concat_name;
   XFREE (concat_name);
-  return NULL;
+  return nullptr;
 }
 
 char *
@@ -6167,8 +6167,8 @@ strendzap (char *str, const char *pat)
 {
   size_t len, patlen;
 
-  assert (str != NULL);
-  assert (pat != NULL);
+  assert (str != nullptr);
+  assert (pat != nullptr);
 
   len = strlen (str);
   patlen = strlen (pat);
@@ -6322,7 +6322,7 @@ EOF
 
 /* Prepares an argument vector before calling spawn().
    Note that spawn() does not by itself call the command interpreter
-     (getenv ("COMSPEC") != NULL ? getenv ("COMSPEC") :
+     (getenv ("COMSPEC") != nullptr ? getenv ("COMSPEC") :
       ({ OSVERSIONINFO v; v.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
          GetVersionEx(&v);
          v.dwPlatformId == VER_PLATFORM_WIN32_NT;
@@ -6353,7 +6353,7 @@ prepare_spawn (char **argv)
   size_t i;
 
   /* Count number of arguments.  */
-  for (argc = 0; argv[argc] != NULL; argc++)
+  for (argc = 0; argv[argc] != nullptr; argc++)
     ;
 
   /* Allocate new argument vector.  */
@@ -6366,9 +6366,9 @@ prepare_spawn (char **argv)
 
       if (string[0] == '\0')
 	new_argv[i] = xstrdup ("\"\"");
-      else if (strpbrk (string, SHELL_SPECIAL_CHARS) != NULL)
+      else if (strpbrk (string, SHELL_SPECIAL_CHARS) != nullptr)
 	{
-	  int quote_around = (strpbrk (string, SHELL_SPACE_CHARS) != NULL);
+	  int quote_around = (strpbrk (string, SHELL_SPACE_CHARS) != nullptr);
 	  size_t length;
 	  unsigned int backslashes;
 	  const char *s;
@@ -6428,7 +6428,7 @@ prepare_spawn (char **argv)
       else
 	new_argv[i] = (char *) string;
     }
-  new_argv[argc] = NULL;
+  new_argv[argc] = nullptr;
 
   return new_argv;
 }

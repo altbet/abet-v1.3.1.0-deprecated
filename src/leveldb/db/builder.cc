@@ -60,7 +60,7 @@ Status BuildTable(const std::string& dbname,
       s = file->Close();
     }
     delete file;
-    file = NULL;
+    file = nullptr;
 
     if (s.ok()) {
       // Verify that the table is usable

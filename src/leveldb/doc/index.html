@@ -188,9 +188,9 @@ iteration may be somewhat slower than forward iteration.)
 <h1>Snapshots</h1>
 <p>
 Snapshots provide consistent read-only views over the entire state of
-the key-value store.  <code>ReadOptions::snapshot</code> may be non-NULL to indicate
+the key-value store.  <code>ReadOptions::snapshot</code> may be non-nullptr to indicate
 that a read should operate on a particular version of the DB state.
-If <code>ReadOptions::snapshot</code> is NULL, the read will operate on an
+If <code>ReadOptions::snapshot</code> is nullptr, the read will operate on an
 implicit snapshot of the current state.
 <p>
 Snapshots are created by the DB::GetSnapshot() method:
@@ -347,7 +347,7 @@ performance improvement:
 <p>
 The contents of the database are stored in a set of files in the
 filesystem and each file stores a sequence of compressed blocks.  If
-<code>options.cache</code> is non-NULL, it is used to cache frequently used
+<code>options.cache</code> is non-nullptr, it is used to cache frequently used
 uncompressed block contents.
 <p>
 <pre>
