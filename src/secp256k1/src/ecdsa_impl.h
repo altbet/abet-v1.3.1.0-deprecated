@@ -20,10 +20,10 @@ typedef struct {
     secp256k1_fe_t p_minus_order;
 } secp256k1_ecdsa_consts_t;
 
-static const secp256k1_ecdsa_consts_t *secp256k1_ecdsa_consts = nullptr;
+static const secp256k1_ecdsa_consts_t *secp256k1_ecdsa_consts = NULL;
 
 static void secp256k1_ecdsa_start(void) {
-    if (secp256k1_ecdsa_consts != nullptr)
+    if (secp256k1_ecdsa_consts != NULL)
         return;
 
     /* Allocate. */
@@ -45,11 +45,11 @@ static void secp256k1_ecdsa_start(void) {
 }
 
 static void secp256k1_ecdsa_stop(void) {
-    if (secp256k1_ecdsa_consts == nullptr)
+    if (secp256k1_ecdsa_consts == NULL)
         return;
 
     secp256k1_ecdsa_consts_t *c = (secp256k1_ecdsa_consts_t*)secp256k1_ecdsa_consts;
-    secp256k1_ecdsa_consts = nullptr;
+    secp256k1_ecdsa_consts = NULL;
     free(c);
 }
 
@@ -124,7 +124,7 @@ static int secp256k1_ecdsa_sig_recompute(secp256k1_scalar_t *r2, const secp256k1
         secp256k1_fe_t xr; secp256k1_gej_get_x_var(&xr, &pr);
         secp256k1_fe_normalize(&xr);
         unsigned char xrb[32]; secp256k1_fe_get_b32(xrb, &xr);
-        secp256k1_scalar_set_b32(r2, xrb, nullptr);
+        secp256k1_scalar_set_b32(r2, xrb, NULL);
         ret = 1;
     }
     return ret;

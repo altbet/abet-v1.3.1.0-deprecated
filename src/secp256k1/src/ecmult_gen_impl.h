@@ -27,10 +27,10 @@ typedef struct {
     secp256k1_fe_t prec[64][16][2]; /* prec[j][i] = (16^j * i * G + U_i).{x,y} */
 } secp256k1_ecmult_gen_consts_t;
 
-static const secp256k1_ecmult_gen_consts_t *secp256k1_ecmult_gen_consts = nullptr;
+static const secp256k1_ecmult_gen_consts_t *secp256k1_ecmult_gen_consts = NULL;
 
 static void secp256k1_ecmult_gen_start(void) {
-    if (secp256k1_ecmult_gen_consts != nullptr)
+    if (secp256k1_ecmult_gen_consts != NULL)
         return;
 
     /* Allocate the precomputation table. */
@@ -92,11 +92,11 @@ static void secp256k1_ecmult_gen_start(void) {
 }
 
 static void secp256k1_ecmult_gen_stop(void) {
-    if (secp256k1_ecmult_gen_consts == nullptr)
+    if (secp256k1_ecmult_gen_consts == NULL)
         return;
 
     secp256k1_ecmult_gen_consts_t *c = (secp256k1_ecmult_gen_consts_t*)secp256k1_ecmult_gen_consts;
-    secp256k1_ecmult_gen_consts = nullptr;
+    secp256k1_ecmult_gen_consts = NULL;
     free(c);
 }
 
