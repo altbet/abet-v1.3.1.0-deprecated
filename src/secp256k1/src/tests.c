@@ -550,9 +550,9 @@ void run_sqr(void) {
 void test_sqrt(const secp256k1_fe_t *a, const secp256k1_fe_t *k) {
     secp256k1_fe_t r1, r2;
     int v = secp256k1_fe_sqrt(&r1, a);
-    CHECK((v == 0) == (k == NULL));
+    CHECK((v == 0) == (k == nullptr));
 
-    if (k != NULL) {
+    if (k != nullptr) {
         /* Check that the returned root is +/- the given known answer */
         secp256k1_fe_negate(&r2, &r1, 1);
         secp256k1_fe_add(&r1, k); secp256k1_fe_add(&r2, k);
@@ -575,7 +575,7 @@ void run_sqrt(void) {
         secp256k1_fe_sqr(&s, &x);
         test_sqrt(&s, &x);
         secp256k1_fe_negate(&t, &s, 1);
-        test_sqrt(&t, NULL);
+        test_sqrt(&t, nullptr);
     }
 
     /* Consistency checks for large random values */
@@ -586,9 +586,9 @@ void run_sqrt(void) {
             secp256k1_fe_sqr(&s, &x);
             test_sqrt(&s, &x);
             secp256k1_fe_negate(&t, &s, 1);
-            test_sqrt(&t, NULL);
+            test_sqrt(&t, nullptr);
             secp256k1_fe_mul(&t, &s, &ns);
-            test_sqrt(&t, NULL);
+            test_sqrt(&t, nullptr);
         }
     }
 }
@@ -716,7 +716,7 @@ void run_ecmult_chain(void) {
         0x70, 0x5d, 0x35, 0x7a, 0x42, 0x98, 0x54, 0x07
     };
     secp256k1_scalar_t xn;
-    secp256k1_scalar_set_b32(&xn, xni, NULL);
+    secp256k1_scalar_set_b32(&xn, xni, nullptr);
     static const unsigned char gni[32] = {
         0xa1, 0xe5, 0x8d, 0x22, 0x55, 0x3d, 0xcd, 0x42,
         0xb2, 0x39, 0x80, 0x62, 0x5d, 0x4c, 0x57, 0xa9,
@@ -724,14 +724,14 @@ void run_ecmult_chain(void) {
         0xca, 0x2c, 0x39, 0x90, 0xed, 0xc7, 0xc9, 0xde
     };
     secp256k1_scalar_t gn;
-    secp256k1_scalar_set_b32(&gn, gni, NULL);
+    secp256k1_scalar_set_b32(&gn, gni, nullptr);
     /* two small multipliers to be applied to xn and gn in every iteration: */
     static const unsigned char xfi[32] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0x13,0x37};
     secp256k1_scalar_t xf;
-    secp256k1_scalar_set_b32(&xf, xfi, NULL);
+    secp256k1_scalar_set_b32(&xf, xfi, nullptr);
     static const unsigned char gfi[32] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0x71,0x13};
     secp256k1_scalar_t gf;
-    secp256k1_scalar_set_b32(&gf, gfi, NULL);
+    secp256k1_scalar_set_b32(&gf, gfi, nullptr);
     /* accumulators with the resulting coefficients to A and G */
     secp256k1_scalar_t ae;
     secp256k1_scalar_set_int(&ae, 1);
@@ -863,7 +863,7 @@ void test_ecdsa_sign_verify(void) {
     secp256k1_ge_t pub; secp256k1_ge_set_gej(&pub, &pubj);
     secp256k1_ecdsa_sig_t sig;
     getrec = secp256k1_rand32()&1;
-    random_sign(&sig, &key, &msg, getrec?&recid:NULL);
+    random_sign(&sig, &key, &msg, getrec?&recid:nullptr);
     if (getrec) CHECK(recid >= 0 && recid < 4);
     CHECK(secp256k1_ecdsa_sig_verify(&sig, &pub, &msg));
     secp256k1_scalar_t one;
@@ -1105,7 +1105,7 @@ void test_ecdsa_openssl(void) {
     secp256k1_scalar_t key, msg;
     unsigned char message[32];
     secp256k1_rand256_test(message);
-    secp256k1_scalar_set_b32(&msg, message, NULL);
+    secp256k1_scalar_set_b32(&msg, message, nullptr);
     random_scalar_order_test(&key);
     secp256k1_gej_t qj;
     secp256k1_ecmult_gen(&qj, &key);
@@ -1125,7 +1125,7 @@ void test_ecdsa_openssl(void) {
     secp256k1_scalar_add(&msg2, &msg, &one);
     CHECK(!secp256k1_ecdsa_sig_verify(&sig, &q, &msg2));
 
-    random_sign(&sig, &key, &msg, NULL);
+    random_sign(&sig, &key, &msg, nullptr);
     int secp_sigsize = 80;
     CHECK(secp256k1_ecdsa_sig_serialize(signature, &secp_sigsize, &sig));
     CHECK(ECDSA_verify(0, message, sizeof(message), signature, secp_sigsize, ec_key) == 1);
@@ -1143,17 +1143,17 @@ void run_ecdsa_openssl(void) {
 int main(int argc, char **argv) {
     /* find iteration count */
     if (argc > 1) {
-        count = strtol(argv[1], NULL, 0);
+        count = strtol(argv[1], nullptr, 0);
     }
 
     /* find random seed */
     uint64_t seed;
     if (argc > 2) {
-        seed = strtoull(argv[2], NULL, 0);
+        seed = strtoull(argv[2], nullptr, 0);
     } else {
         FILE *frand = fopen("/dev/urandom", "r");
         if (!frand || !fread(&seed, sizeof(seed), 1, frand)) {
-            seed = time(NULL) * 1337;
+            seed = time(nullptr) * 1337;
         }
         fclose(frand);
     }

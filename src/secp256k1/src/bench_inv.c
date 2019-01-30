@@ -28,8 +28,8 @@ int main(void) {
     };
     secp256k1_ge_start();
     secp256k1_scalar_t base, x;
-    secp256k1_scalar_set_b32(&base, init, NULL);
-    secp256k1_scalar_set_b32(&x, init, NULL);
+    secp256k1_scalar_set_b32(&base, init, nullptr);
+    secp256k1_scalar_set_b32(&x, init, nullptr);
     for (int i=0; i<1000000; i++) {
         secp256k1_scalar_inverse(&x, &x);
         secp256k1_scalar_add(&x, &x, &base);

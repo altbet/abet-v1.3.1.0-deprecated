@@ -183,7 +183,7 @@ class PosixWritableFile : public WritableFile {
       : filename_(fname), file_(f) { }
 
   ~PosixWritableFile() {
-    if (file_ != NULL) {
+    if (file_ != nullptr) {
       // Ignoring any potential errors
       fclose(file_);
     }
@@ -202,7 +202,7 @@ class PosixWritableFile : public WritableFile {
     if (fclose(file_) != 0) {
       result = IOError(filename_, errno);
     }
-    file_ = NULL;
+    file_ = nullptr;
     return result;
   }
 
@@ -218,7 +218,7 @@ class PosixWritableFile : public WritableFile {
     const char* sep = strrchr(f, '/');
     Slice basename;
     std::string dir;
-    if (sep == NULL) {
+    if (sep == nullptr) {
       dir = ".";
       basename = f;
     } else {
@@ -301,8 +301,8 @@ class PosixEnv : public Env {
   virtual Status NewSequentialFile(const std::string& fname,
                                    SequentialFile** result) {
     FILE* f = fopen(fname.c_str(), "r");
-    if (f == NULL) {
-      *result = NULL;
+    if (f == nullptr) {
+      *result = nullptr;
       return IOError(fname, errno);
     } else {
       *result = new PosixSequentialFile(fname, f);
@@ -312,7 +312,7 @@ class PosixEnv : public Env {
 
   virtual Status NewRandomAccessFile(const std::string& fname,
                                      RandomAccessFile** result) {
-    *result = NULL;
+    *result = nullptr;
     Status s;
     int fd = open(fname.c_str(), O_RDONLY);
     if (fd < 0) {
@@ -321,7 +321,7 @@ class PosixEnv : public Env {
       uint64_t size;
       s = GetFileSize(fname, &size);
       if (s.ok()) {
-        void* base = mmap(NULL, size, PROT_READ, MAP_SHARED, fd, 0);
+        void* base = mmap(nullptr, size, PROT_READ, MAP_SHARED, fd, 0);
         if (base != MAP_FAILED) {
           *result = new PosixMmapReadableFile(fname, base, size, &mmap_limit_);
         } else {
@@ -342,8 +342,8 @@ class PosixEnv : public Env {
                                  WritableFile** result) {
     Status s;
     FILE* f = fopen(fname.c_str(), "w");
-    if (f == NULL) {
-      *result = NULL;
+    if (f == nullptr) {
+      *result = nullptr;
       s = IOError(fname, errno);
     } else {
       *result = new PosixWritableFile(fname, f);
@@ -359,11 +359,11 @@ class PosixEnv : public Env {
                              std::vector<std::string>* result) {
     result->clear();
     DIR* d = opendir(dir.c_str());
-    if (d == NULL) {
+    if (d == nullptr) {
       return IOError(dir, errno);
     }
     struct dirent* entry;
-    while ((entry = readdir(d)) != NULL) {
+    while ((entry = readdir(d)) != nullptr) {
       result->push_back(entry->d_name);
     }
     closedir(d);
@@ -415,7 +415,7 @@ class PosixEnv : public Env {
   }
 
   virtual Status LockFile(const std::string& fname, FileLock** lock) {
-    *lock = NULL;
+    *lock = nullptr;
     Status result;
     int fd = open(fname.c_str(), O_RDWR | O_CREAT, 0644);
     if (fd < 0) {
@@ -475,8 +475,8 @@ class PosixEnv : public Env {
 
   virtual Status NewLogger(const std::string& fname, Logger** result) {
     FILE* f = fopen(fname.c_str(), "w");
-    if (f == NULL) {
-      *result = NULL;
+    if (f == nullptr) {
+      *result = nullptr;
       return IOError(fname, errno);
     } else {
       *result = new PosixLogger(f, &PosixEnv::gettid);
@@ -486,7 +486,7 @@ class PosixEnv : public Env {
 
   virtual uint64_t NowMicros() {
     struct timeval tv;
-    gettimeofday(&tv, NULL);
+    gettimeofday(&tv, nullptr);
     return static_cast<uint64_t>(tv.tv_sec) * 1000000 + tv.tv_usec;
   }
 
@@ -506,7 +506,7 @@ class PosixEnv : public Env {
   void BGThread();
   static void* BGThreadWrapper(void* arg) {
     reinterpret_cast<PosixEnv*>(arg)->BGThread();
-    return NULL;
+    return nullptr;
   }
 
   pthread_mutex_t mu_;
@@ -524,8 +524,8 @@ class PosixEnv : public Env {
 };
 
 PosixEnv::PosixEnv() : started_bgthread_(false) {
-  PthreadCall("mutex_init", pthread_mutex_init(&mu_, NULL));
-  PthreadCall("cvar_init", pthread_cond_init(&bgsignal_, NULL));
+  PthreadCall("mutex_init", pthread_mutex_init(&mu_, nullptr));
+  PthreadCall("cvar_init", pthread_cond_init(&bgsignal_, nullptr));
 }
 
 void PosixEnv::Schedule(void (*function)(void*), void* arg) {
@@ -536,7 +536,7 @@ void PosixEnv::Schedule(void (*function)(void*), void* arg) {
     started_bgthread_ = true;
     PthreadCall(
         "create thread",
-        pthread_create(&bgthread_, NULL,  &PosixEnv::BGThreadWrapper, this));
+        pthread_create(&bgthread_, nullptr,  &PosixEnv::BGThreadWrapper, this));
   }
 
   // If the queue is currently empty, the background thread may currently be
@@ -580,7 +580,7 @@ static void* StartThreadWrapper(void* arg) {
   StartThreadState* state = reinterpret_cast<StartThreadState*>(arg);
   state->user_function(state->arg);
   delete state;
-  return NULL;
+  return nullptr;
 }
 
 void PosixEnv::StartThread(void (*function)(void* arg), void* arg) {
@@ -589,7 +589,7 @@ void PosixEnv::StartThread(void (*function)(void* arg), void* arg) {
   state->user_function = function;
   state->arg = arg;
   PthreadCall("start thread",
-              pthread_create(&t, NULL,  &StartThreadWrapper, state));
+              pthread_create(&t, nullptr,  &StartThreadWrapper, state));
 }
 
 }  // namespace

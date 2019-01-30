@@ -35,7 +35,7 @@ typedef struct {
 #endif
 } secp256k1_ge_consts_t;
 
-static const secp256k1_ge_consts_t *secp256k1_ge_consts = NULL;
+static const secp256k1_ge_consts_t *secp256k1_ge_consts = nullptr;
 
 /** Initialize the group module. */
 static void secp256k1_ge_start(void);

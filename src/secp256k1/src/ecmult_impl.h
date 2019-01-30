@@ -78,10 +78,10 @@ typedef struct {
 #endif
 } secp256k1_ecmult_consts_t;
 
-static const secp256k1_ecmult_consts_t *secp256k1_ecmult_consts = NULL;
+static const secp256k1_ecmult_consts_t *secp256k1_ecmult_consts = nullptr;
 
 static void secp256k1_ecmult_start(void) {
-    if (secp256k1_ecmult_consts != NULL)
+    if (secp256k1_ecmult_consts != nullptr)
         return;
 
     /* Allocate the precomputation table. */
@@ -109,11 +109,11 @@ static void secp256k1_ecmult_start(void) {
 }
 
 static void secp256k1_ecmult_stop(void) {
-    if (secp256k1_ecmult_consts == NULL)
+    if (secp256k1_ecmult_consts == nullptr)
         return;
 
     secp256k1_ecmult_consts_t *c = (secp256k1_ecmult_consts_t*)secp256k1_ecmult_consts;
-    secp256k1_ecmult_consts = NULL;
+    secp256k1_ecmult_consts = nullptr;
     free(c);
 }
 
