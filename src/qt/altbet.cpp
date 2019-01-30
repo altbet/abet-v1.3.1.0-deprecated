@@ -155,14 +155,14 @@ static void initTranslations(QTranslator& qtTranslatorBase, QTranslator& qtTrans
 #if QT_VERSION < 0x050000
 void DebugMessageHandler(QtMsgType type, const char* msg)
 {
-    const char* category = (type == QtDebugMsg) ? "qt" : nullptr;
+    const char* category = (type == QtDebugMsg) ? "qt" : NULL;
     LogPrint(category, "GUI: %s\n", msg);
 }
 #else
 void DebugMessageHandler(QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
     Q_UNUSED(context);
-    const char* category = (type == QtDebugMsg) ? "qt" : nullptr;
+    const char* category = (type == QtDebugMsg) ? "qt" : NULL;
     LogPrint(category, "GUI: %s\n", msg.toStdString());
 }
 #endif
@@ -283,7 +283,7 @@ void BitcoinCore::initialize()
     } catch (std::exception& e) {
         handleRunawayException(&e);
     } catch (...) {
-        handleRunawayException(nullptr);
+        handleRunawayException(NULL);
     }
 }
 
@@ -305,7 +305,7 @@ void BitcoinCore::restart(QStringList args)
         } catch (std::exception& e) {
             handleRunawayException(&e);
         } catch (...) {
-            handleRunawayException(nullptr);
+            handleRunawayException(NULL);
         }
     }
 }
@@ -322,7 +322,7 @@ void BitcoinCore::shutdown()
     } catch (std::exception& e) {
         handleRunawayException(&e);
     } catch (...) {
-        handleRunawayException(nullptr);
+        handleRunawayException(NULL);
     }
 }
 
@@ -577,7 +577,7 @@ int main(int argc, char* argv[])
     // Show help message immediately after parsing command-line options (for "-lang") and setting locale,
     // but before showing splash screen.
     if (mapArgs.count("-?") || mapArgs.count("-help") || mapArgs.count("-version")) {
-        HelpMessageDialog help(nullptr, mapArgs.count("-version"));
+        HelpMessageDialog help(NULL, mapArgs.count("-version"));
         help.showOrPrint();
         return 1;
     }
@@ -684,7 +684,7 @@ int main(int argc, char* argv[])
         PrintExceptionContinue(&e, "Runaway exception");
         app.handleRunawayException(QString::fromStdString(strMiscWarning));
     } catch (...) {
-        PrintExceptionContinue(nullptr, "Runaway exception");
+        PrintExceptionContinue(NULL, "Runaway exception");
         app.handleRunawayException(QString::fromStdString(strMiscWarning));
     }
     return app.getReturnValue();

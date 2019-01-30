@@ -63,7 +63,7 @@ const struct {
     {"cmd-reply", ":/icons/tx_output"},
     {"cmd-error", ":/icons/tx_output"},
     {"misc", ":/icons/tx_inout"},
-    {nullptr, nullptr}};
+    {NULL, NULL}};
 
 /* Object for executing console RPC commands in a separate thread.
 */
@@ -697,7 +697,7 @@ void RPCConsole::peerLayoutChanged()
     if (!clientModel)
         return;
 
-    const CNodeCombinedStats* stats = nullptr;
+    const CNodeCombinedStats* stats = NULL;
     bool fUnselect = false;
     bool fReselect = false;
 

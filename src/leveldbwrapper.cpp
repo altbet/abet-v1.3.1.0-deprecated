@@ -45,7 +45,7 @@ static leveldb::Options GetOptions(size_t nCacheSize)
 
 CLevelDBWrapper::CLevelDBWrapper(const boost::filesystem::path& path, size_t nCacheSize, bool fMemory, bool fWipe)
 {
-    penv = nullptr;
+    penv = NULL;
     readoptions.verify_checksums = true;
     iteroptions.verify_checksums = true;
     iteroptions.fill_cache = false;
@@ -71,13 +71,13 @@ CLevelDBWrapper::CLevelDBWrapper(const boost::filesystem::path& path, size_t nCa
 CLevelDBWrapper::~CLevelDBWrapper()
 {
     delete pdb;
-    pdb = nullptr;
+    pdb = NULL;
     delete options.filter_policy;
-    options.filter_policy = nullptr;
+    options.filter_policy = NULL;
     delete options.block_cache;
-    options.block_cache = nullptr;
+    options.block_cache = NULL;
     delete penv;
-    options.env = nullptr;
+    options.env = NULL;
 }
 
 bool CLevelDBWrapper::WriteBatch(CLevelDBBatch& batch, bool fSync) throw(leveldb_error)

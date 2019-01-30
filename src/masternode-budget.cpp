@@ -105,7 +105,7 @@ void CBudgetManager::CheckOrphanVotes()
     std::string strError = "";
     std::map<uint256, CBudgetVote>::iterator it1 = mapOrphanMasternodeBudgetVotes.begin();
     while (it1 != mapOrphanMasternodeBudgetVotes.end()) {
-        if (budget.UpdateProposal(((*it1).second), nullptr, strError)) {
+        if (budget.UpdateProposal(((*it1).second), NULL, strError)) {
             LogPrintf("CBudgetManager::CheckOrphanVotes - Proposal/Budget is known, activating and removing orphan vote\n");
             mapOrphanMasternodeBudgetVotes.erase(it1++);
         } else {
@@ -114,7 +114,7 @@ void CBudgetManager::CheckOrphanVotes()
     }
     std::map<uint256, CFinalizedBudgetVote>::iterator it2 = mapOrphanFinalizedBudgetVotes.begin();
     while (it2 != mapOrphanFinalizedBudgetVotes.end()) {
-        if (budget.UpdateFinalizedBudget(((*it2).second), nullptr, strError)) {
+        if (budget.UpdateFinalizedBudget(((*it2).second), NULL, strError)) {
             LogPrintf("CBudgetManager::CheckOrphanVotes - Proposal/Budget is known, activating and removing orphan vote\n");
             mapOrphanFinalizedBudgetVotes.erase(it2++);
         } else {
@@ -520,7 +520,7 @@ CFinalizedBudget* CBudgetManager::FindFinalizedBudget(uint256 nHash)
     if (mapFinalizedBudgets.count(nHash))
         return &mapFinalizedBudgets[nHash];
 
-    return nullptr;
+    return NULL;
 }
 
 CBudgetProposal* CBudgetManager::FindProposal(const std::string& strProposalName)
@@ -528,7 +528,7 @@ CBudgetProposal* CBudgetManager::FindProposal(const std::string& strProposalName
     //find the prop with the highest yes count
 
     int nYesCount = -99999;
-    CBudgetProposal* pbudgetProposal = nullptr;
+    CBudgetProposal* pbudgetProposal = NULL;
 
     std::map<uint256, CBudgetProposal>::iterator it = mapProposals.begin();
     while (it != mapProposals.end()) {
@@ -539,7 +539,7 @@ CBudgetProposal* CBudgetManager::FindProposal(const std::string& strProposalName
         ++it;
     }
 
-    if (nYesCount == -99999) return nullptr;
+    if (nYesCount == -99999) return NULL;
 
     return pbudgetProposal;
 }
@@ -551,7 +551,7 @@ CBudgetProposal* CBudgetManager::FindProposal(uint256 nHash)
     if (mapProposals.count(nHash))
         return &mapProposals[nHash];
 
-    return nullptr;
+    return NULL;
 }
 
 bool CBudgetManager::IsBudgetPaymentBlock(int nBlockHeight)
@@ -705,7 +705,7 @@ std::vector<CBudgetProposal*> CBudgetManager::GetBudget()
 
     CAmount nBudgetAllocated = 0;
     CBlockIndex* pindexPrev = chainActive.Tip();
-    if (pindexPrev == nullptr) return vBudgetProposalsRet;
+    if (pindexPrev == NULL) return vBudgetProposalsRet;
 
     int nBlockStart = pindexPrev->nHeight - pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() + GetBudgetPaymentCycleBlocks();
     int nBlockEnd = nBlockStart + GetBudgetPaymentCycleBlocks() - 1;
@@ -990,7 +990,7 @@ void CBudgetManager::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
         }
 
         CMasternode* pmn = mnodeman.Find(vote.vin);
-        if (pmn == nullptr) {
+        if (pmn == NULL) {
             LogPrintf("mvote - unknown masternode - vin: %s\n", vote.vin.prevout.hash.ToString());
             mnodeman.AskForMN(pfrom, vote.vin);
             return;
@@ -1063,7 +1063,7 @@ void CBudgetManager::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
         }
 
         CMasternode* pmn = mnodeman.Find(vote.vin);
-        if (pmn == nullptr) {
+        if (pmn == NULL) {
             LogPrint("mnbudget", "fbvote - unknown masternode - vin: %s\n", vote.vin.prevout.hash.ToString());
             mnodeman.AskForMN(pfrom, vote.vin);
             return;
@@ -1390,8 +1390,8 @@ bool CBudgetProposal::IsValid(std::string& strError, bool fCheckCollateral)
     }
 
     CBlockIndex* pindexPrev = chainActive.Tip();
-    if (pindexPrev == nullptr) {
-        strError = "Tip is nullptr";
+    if (pindexPrev == NULL) {
+        strError = "Tip is NULL";
         return true;
     }
 
@@ -1510,7 +1510,7 @@ int CBudgetProposal::GetBlockStartCycle()
 int CBudgetProposal::GetBlockCurrentCycle()
 {
     CBlockIndex* pindexPrev = chainActive.Tip();
-    if (pindexPrev == nullptr) return -1;
+    if (pindexPrev == NULL) return -1;
 
     if (pindexPrev->nHeight >= GetBlockEndCycle()) return -1;
 
@@ -1615,7 +1615,7 @@ bool CBudgetVote::SignatureValid(bool fSignatureCheck)
 
     CMasternode* pmn = mnodeman.Find(vin);
 
-    if (pmn == nullptr) {
+    if (pmn == NULL) {
         if (fDebug){
             LogPrintf("CBudgetVote::SignatureValid() - Unknown Masternode - %s\n", vin.prevout.hash.ToString());
         }
@@ -1887,7 +1887,7 @@ bool CFinalizedBudget::IsValid(std::string& strError, bool fCheckCollateral)
     //TODO: if N cycles old, invalid, invalid
 
     CBlockIndex* pindexPrev = chainActive.Tip();
-    if (pindexPrev == nullptr) return true;
+    if (pindexPrev == NULL) return true;
 
     if (nBlockStart < pindexPrev->nHeight - 100) {
         strError = "Older than current blockHeight";
@@ -1944,7 +1944,7 @@ void CFinalizedBudget::SubmitVote()
     }
 
     std::string strError = "";
-    if (budget.UpdateFinalizedBudget(vote, nullptr, strError)) {
+    if (budget.UpdateFinalizedBudget(vote, NULL, strError)) {
         LogPrintf("CFinalizedBudget::SubmitVote  - new finalized budget vote - %s\n", vote.GetHash().ToString());
 
         budget.mapSeenFinalizedBudgetVotes.insert(make_pair(vote.GetHash(), vote));
@@ -2046,7 +2046,7 @@ bool CFinalizedBudgetVote::SignatureValid(bool fSignatureCheck)
 
     CMasternode* pmn = mnodeman.Find(vin);
 
-    if (pmn == nullptr) {
+    if (pmn == NULL) {
         LogPrintf("CFinalizedBudgetVote::SignatureValid() - Unknown Masternode\n");
         return false;
     }

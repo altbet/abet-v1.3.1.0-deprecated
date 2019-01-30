@@ -125,5 +125,5 @@ bool SelectBaseParamsFromCommandLine()
 
 bool AreBaseParamsConfigured()
 {
-    return pCurrentBaseParams != nullptr;
+    return pCurrentBaseParams != NULL;
 }

@@ -59,7 +59,7 @@ void DetectShutdownThread(boost::thread_group* threadGroup)
 bool AppInit(int argc, char* argv[])
 {
     boost::thread_group threadGroup;
-    boost::thread* detectShutdownThread = nullptr;
+    boost::thread* detectShutdownThread = NULL;
 
     bool fRet = false;
 
@@ -149,7 +149,7 @@ bool AppInit(int argc, char* argv[])
     } catch (std::exception& e) {
         PrintExceptionContinue(&e, "AppInit()");
     } catch (...) {
-        PrintExceptionContinue(nullptr, "AppInit()");
+        PrintExceptionContinue(NULL, "AppInit()");
     }
 
     if (!fRet) {
@@ -165,7 +165,7 @@ bool AppInit(int argc, char* argv[])
     if (detectShutdownThread) {
         detectShutdownThread->join();
         delete detectShutdownThread;
-        detectShutdownThread = nullptr;
+        detectShutdownThread = NULL;
     }
     Shutdown();
 

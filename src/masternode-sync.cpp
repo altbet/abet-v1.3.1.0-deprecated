@@ -51,7 +51,7 @@ bool CMasternodeSync::IsBlockchainSynced()
     if (!lockMain) return false;
 
     CBlockIndex* pindex = chainActive.Tip();
-    if (pindex == nullptr) return false;
+    if (pindex == NULL) return false;
 
 
     if (pindex->nTime + 60 * 60 < GetTime())
@@ -356,7 +356,7 @@ void CMasternodeSync::Process()
                 if (RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD * 3) return;
 
                 CBlockIndex* pindexPrev = chainActive.Tip();
-                if (pindexPrev == nullptr) return;
+                if (pindexPrev == NULL) return;
 
                 int nMnCount = mnodeman.CountEnabled();
                 pnode->PushMessage("mnget", nMnCount); //sync payees

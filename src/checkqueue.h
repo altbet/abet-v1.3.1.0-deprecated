@@ -182,8 +182,8 @@ private:
 public:
     CCheckQueueControl(CCheckQueue<T>* pqueueIn) : pqueue(pqueueIn), fDone(false)
     {
-        // passed queue is supposed to be unused, or nullptr
-        if (pqueue != nullptr) {
+        // passed queue is supposed to be unused, or NULL
+        if (pqueue != NULL) {
             bool isIdle = pqueue->IsIdle();
             assert(isIdle);
         }
@@ -191,7 +191,7 @@ public:
 
     bool Wait()
     {
-        if (pqueue == nullptr)
+        if (pqueue == NULL)
             return true;
         bool fRet = pqueue->Wait();
         fDone = true;
@@ -200,7 +200,7 @@ public:
 
     void Add(std::vector<T>& vChecks)
     {
-        if (pqueue != nullptr)
+        if (pqueue != NULL)
             pqueue->Add(vChecks);
     }
 

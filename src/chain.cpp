@@ -12,7 +12,7 @@ using namespace std;
  */
 void CChain::SetTip(CBlockIndex* pindex)
 {
-    if (pindex == nullptr) {
+    if (pindex == NULL) {
         vChain.clear();
         return;
     }

@@ -293,7 +293,7 @@ bool ProcessConsensusVote(CNode* pnode, CConsensusVote& ctx)
     int n = mnodeman.GetMasternodeRank(ctx.vinMasternode, ctx.nBlockHeight, MIN_SWIFTTX_PROTO_VERSION);
 
     CMasternode* pmn = mnodeman.Find(ctx.vinMasternode);
-    if (pmn != nullptr)
+    if (pmn != NULL)
         LogPrint("swifttx", "SwiftTX::ProcessConsensusVote - Masternode ADDR %s %d\n", pmn->addr.ToString().c_str(), n);
 
     if (n == -1) {
@@ -419,7 +419,7 @@ int64_t GetAverageVoteTime()
 
 void CleanTransactionLocksList()
 {
-    if (chainActive.Tip() == nullptr) return;
+    if (chainActive.Tip() == NULL) return;
 
     std::map<uint256, CTransactionLock>::iterator it = mapTxLocks.begin();
 
@@ -461,7 +461,7 @@ bool CConsensusVote::SignatureValid()
 
     CMasternode* pmn = mnodeman.Find(vinMasternode);
 
-    if (pmn == nullptr) {
+    if (pmn == NULL) {
         LogPrintf("SwiftTX::CConsensusVote::SignatureValid() - Unknown Masternode\n");
         return false;
     }

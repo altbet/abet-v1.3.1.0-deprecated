@@ -223,14 +223,14 @@ void ToWidePath(const std::string& value, std::wstring& target) {
 
 void ToNarrowPath(const std::wstring& value, std::string& target) {
 	char buffer[MAX_PATH];
-	WideCharToMultiByte(CP_ACP, 0, value.c_str(), -1, buffer, MAX_PATH, nullptr, nullptr);
+	WideCharToMultiByte(CP_ACP, 0, value.c_str(), -1, buffer, MAX_PATH, NULL, NULL);
 	target = buffer;
 }
 
 std::string GetCurrentDir()
 {
     CHAR path[MAX_PATH];
-    ::GetModuleFileNameA(::GetModuleHandleA(nullptr),path,MAX_PATH);
+    ::GetModuleFileNameA(::GetModuleHandleA(NULL),path,MAX_PATH);
     *strrchr(path,'\\') = 0;
     return std::string(path);
 }
@@ -238,7 +238,7 @@ std::string GetCurrentDir()
 std::wstring GetCurrentDirW()
 {
     WCHAR path[MAX_PATH];
-    ::GetModuleFileNameW(::GetModuleHandleW(nullptr),path,MAX_PATH);
+    ::GetModuleFileNameW(::GetModuleHandleW(NULL),path,MAX_PATH);
     *wcsrchr(path,L'\\') = 0;
     return std::wstring(path);
 }
@@ -269,12 +269,12 @@ std::string GetLastErrSz()
         FORMAT_MESSAGE_ALLOCATE_BUFFER | 
         FORMAT_MESSAGE_FROM_SYSTEM | 
         FORMAT_MESSAGE_IGNORE_INSERTS,
-        nullptr,
+        NULL,
         GetLastError(),
         0, // Default language
         (LPWSTR) &lpMsgBuf,
         0,
-        nullptr 
+        NULL 
         );
     std::string Err;
 	ToNarrowPath(lpMsgBuf, Err); 
@@ -289,12 +289,12 @@ std::wstring GetLastErrSzW()
         FORMAT_MESSAGE_ALLOCATE_BUFFER | 
         FORMAT_MESSAGE_FROM_SYSTEM | 
         FORMAT_MESSAGE_IGNORE_INSERTS,
-        nullptr,
+        NULL,
         GetLastError(),
         0, // Default language
         (LPWSTR) &lpMsgBuf,
         0,
-        nullptr 
+        NULL 
         );
     std::wstring Err = (LPCWSTR)lpMsgBuf;
     LocalFree(lpMsgBuf);
@@ -328,7 +328,7 @@ const size_t g_PageSize = GetPageSize();
 
 
 Win32SequentialFile::Win32SequentialFile( const std::string& fname ) :
-    _filename(fname),_hFile(nullptr)
+    _filename(fname),_hFile(NULL)
 {
     _Init();
 }
@@ -342,7 +342,7 @@ Status Win32SequentialFile::Read( size_t n, Slice* result, char* scratch )
 {
     Status sRet;
     DWORD hasRead = 0;
-    if(_hFile && ReadFile(_hFile,scratch,n,&hasRead,nullptr) ){
+    if(_hFile && ReadFile(_hFile,scratch,n,&hasRead,NULL) ){
         *result = Slice(scratch,hasRead);
     } else {
         sRet = Status::IOError(_filename, Win32::GetLastErrSz() );
@@ -373,10 +373,10 @@ BOOL Win32SequentialFile::_Init()
 	_hFile = CreateFileW(path.c_str(),
                          GENERIC_READ,
                          FILE_SHARE_READ,
-                         nullptr,
+                         NULL,
                          OPEN_EXISTING,
                          FILE_ATTRIBUTE_NORMAL,
-                         nullptr);
+                         NULL);
     return _hFile ? TRUE : FALSE;
 }
 
@@ -384,12 +384,12 @@ void Win32SequentialFile::_CleanUp()
 {
     if(_hFile){
         CloseHandle(_hFile);
-        _hFile = nullptr;
+        _hFile = NULL;
     }
 }
 
 Win32RandomAccessFile::Win32RandomAccessFile( const std::string& fname ) :
-    _filename(fname),_hFile(nullptr)
+    _filename(fname),_hFile(NULL)
 {
 	std::wstring path;
 	ToWidePath(fname, path);
@@ -420,10 +420,10 @@ BOOL Win32RandomAccessFile::_Init( LPCWSTR path )
 {
     BOOL bRet = FALSE;
     if(!_hFile)
-        _hFile = ::CreateFileW(path,GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,
-        FILE_ATTRIBUTE_NORMAL | FILE_FLAG_RANDOM_ACCESS,nullptr);
+        _hFile = ::CreateFileW(path,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,
+        FILE_ATTRIBUTE_NORMAL | FILE_FLAG_RANDOM_ACCESS,NULL);
     if(!_hFile || _hFile == INVALID_HANDLE_VALUE )
-        _hFile = nullptr;
+        _hFile = NULL;
     else
         bRet = TRUE;
     return bRet;
@@ -438,7 +438,7 @@ void Win32RandomAccessFile::_CleanUp()
 {
     if(_hFile){
         ::CloseHandle(_hFile);
-        _hFile = nullptr;
+        _hFile = NULL;
     }
 }
 
@@ -457,7 +457,7 @@ size_t Win32MapFile::_TruncateToPageBoundary( size_t s )
 bool Win32MapFile::_UnmapCurrentRegion()
 {
     bool result = true;
-    if (_base != nullptr) {
+    if (_base != NULL) {
         if (_last_sync < _limit) {
             // Defer syncing this data until next Sync() call, if any
             _pending_sync = true;
@@ -465,11 +465,11 @@ bool Win32MapFile::_UnmapCurrentRegion()
         if (!UnmapViewOfFile(_base) || !CloseHandle(_base_handle))
             result = false;
         _file_offset += _limit - _base;
-        _base = nullptr;
-        _base_handle = nullptr;
-        _limit = nullptr;
-        _last_sync = nullptr;
-        _dst = nullptr;
+        _base = NULL;
+        _base_handle = NULL;
+        _limit = NULL;
+        _last_sync = NULL;
+        _dst = NULL;
         // Increase the amount we map the next time, but capped at 1MB
         if (_map_size < (1<<20)) {
             _map_size *= 2;
@@ -480,30 +480,30 @@ bool Win32MapFile::_UnmapCurrentRegion()
 
 bool Win32MapFile::_MapNewRegion()
 {
-    assert(_base == nullptr);
+    assert(_base == NULL);
     //LONG newSizeHigh = (LONG)((file_offset_ + map_size_) >> 32);
     //LONG newSizeLow = (LONG)((file_offset_ + map_size_) & 0xFFFFFFFF);
     DWORD off_hi = (DWORD)(_file_offset >> 32);
     DWORD off_lo = (DWORD)(_file_offset & 0xFFFFFFFF);
     LARGE_INTEGER newSize;
     newSize.QuadPart = _file_offset + _map_size;
-    SetFilePointerEx(_hFile, newSize, nullptr, FILE_BEGIN);
+    SetFilePointerEx(_hFile, newSize, NULL, FILE_BEGIN);
     SetEndOfFile(_hFile);
 
     _base_handle = CreateFileMappingA(
         _hFile,
-        nullptr,
+        NULL,
         PAGE_READWRITE,
         0,
         0,
         0);
-    if (_base_handle != nullptr) {
+    if (_base_handle != NULL) {
         _base = (char*) MapViewOfFile(_base_handle,
             FILE_MAP_ALL_ACCESS,
             off_hi,
             off_lo,
             _map_size);
-        if (_base != nullptr) {
+        if (_base != NULL) {
             _limit = _base + _map_size;
             _dst = _base;
             _last_sync = _base;
@@ -515,14 +515,14 @@ bool Win32MapFile::_MapNewRegion()
 
 Win32MapFile::Win32MapFile( const std::string& fname) :
     _filename(fname),
-    _hFile(nullptr),
+    _hFile(NULL),
     _page_size(Win32::g_PageSize),
     _map_size(_Roundup(65536, Win32::g_PageSize)),
-    _base(nullptr),
-    _base_handle(nullptr),
-    _limit(nullptr),
-    _dst(nullptr),
-    _last_sync(nullptr),
+    _base(NULL),
+    _base_handle(NULL),
+    _limit(NULL),
+    _dst(NULL),
+    _last_sync(NULL),
     _file_offset(0),
     _pending_sync(false)
 {
@@ -566,7 +566,7 @@ Status Win32MapFile::Close()
         // Trim the extra space at the end of the file
         LARGE_INTEGER newSize;
         newSize.QuadPart = _file_offset - unused;
-        if (!SetFilePointerEx(_hFile, newSize, nullptr, FILE_BEGIN)) {
+        if (!SetFilePointerEx(_hFile, newSize, NULL, FILE_BEGIN)) {
             s = Status::IOError("WinMmapFile.Close::SetFilePointer: ",Win32::GetLastErrSz());
         } else 
             SetEndOfFile(_hFile);
@@ -577,9 +577,9 @@ Status Win32MapFile::Close()
         }
     }
     _hFile = INVALID_HANDLE_VALUE;
-    _base = nullptr;
-    _base_handle = nullptr;
-    _limit = nullptr;
+    _base = NULL;
+    _base_handle = NULL;
+    _limit = NULL;
 
     return s;
 }
@@ -625,10 +625,10 @@ BOOL Win32MapFile::_Init( LPCWSTR Path )
     _hFile = CreateFileW(Path,
                          GENERIC_READ | GENERIC_WRITE,
                          FILE_SHARE_READ|FILE_SHARE_DELETE|FILE_SHARE_WRITE,
-                         nullptr,
+                         NULL,
                          Flag,
                          FILE_ATTRIBUTE_NORMAL,
-                         nullptr);
+                         NULL);
     if(!_hFile || _hFile == INVALID_HANDLE_VALUE)
         return FALSE;
     else
@@ -641,7 +641,7 @@ BOOL Win32MapFile::isEnable()
 }
 
 Win32FileLock::Win32FileLock( const std::string& fname ) :
-    _hFile(nullptr),_filename(fname)
+    _hFile(NULL),_filename(fname)
 {
 	std::wstring path;
 	ToWidePath(fname, path);
@@ -657,9 +657,9 @@ BOOL Win32FileLock::_Init( LPCWSTR path )
 {
     BOOL bRet = FALSE;
     if(!_hFile)
-        _hFile = ::CreateFileW(path,0,0,nullptr,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,nullptr);
+        _hFile = ::CreateFileW(path,0,0,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL);
     if(!_hFile || _hFile == INVALID_HANDLE_VALUE ){
-        _hFile = nullptr;
+        _hFile = NULL;
     }
     else
         bRet = TRUE;
@@ -669,7 +669,7 @@ BOOL Win32FileLock::_Init( LPCWSTR path )
 void Win32FileLock::_CleanUp()
 {
     ::CloseHandle(_hFile);
-    _hFile = nullptr;
+    _hFile = NULL;
 }
 
 BOOL Win32FileLock::isEnable()
@@ -819,7 +819,7 @@ Status Win32Env::GetFileSize( const std::string& fname, uint64_t* file_size )
 	ToWidePath(ModifyPath(path), wpath);
 
     HANDLE file = ::CreateFileW(wpath.c_str(),
-        GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr);
+        GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
     LARGE_INTEGER li;
     if(::GetFileSizeEx(file,&li)){
         *file_size = (uint64_t)li.QuadPart;
@@ -860,7 +860,7 @@ Status Win32Env::LockFile( const std::string& fname, FileLock** lock )
     Win32FileLock* _lock = new Win32FileLock(path);
     if(!_lock->isEnable()){
         delete _lock;
-        *lock = nullptr;
+        *lock = NULL;
         sRet = Status::IOError(path, "Could not lock file.");
     }
     else
@@ -916,7 +916,7 @@ static Status CreateDirInner( const std::string& dirname )
 	sRet = CreateDirInner(dirname.substr(0, slash));
 	if (!sRet.ok()) return sRet;
       }
-      BOOL result = ::CreateDirectory(dirname.c_str(), nullptr);
+      BOOL result = ::CreateDirectory(dirname.c_str(), NULL);
       if (result == FALSE) {
 	sRet = Status::IOError(dirname, "Could not create directory.");
 	return sRet;
@@ -970,7 +970,7 @@ Status Win32Env::NewRandomAccessFile( const std::string& fname, RandomAccessFile
     Win32RandomAccessFile* pFile = new Win32RandomAccessFile(ModifyPath(path));
     if(!pFile->isEnable()){
         delete pFile;
-        *result = nullptr;
+        *result = NULL;
         sRet = Status::IOError(path, Win32::GetLastErrSz());
     }else
         *result = pFile;
@@ -984,7 +984,7 @@ Status Win32Env::NewLogger( const std::string& fname, Logger** result )
     Win32MapFile* pMapFile = new Win32MapFile(ModifyPath(path));
     if(!pMapFile->isEnable()){
         delete pMapFile;
-        *result = nullptr;
+        *result = NULL;
         sRet = Status::IOError(path,"could not create a logger.");
     }else
         *result = new Win32Logger(pMapFile);
@@ -997,7 +997,7 @@ Status Win32Env::NewWritableFile( const std::string& fname, WritableFile** resul
     std::string path = fname;
     Win32MapFile* pFile = new Win32MapFile(ModifyPath(path));
     if(!pFile->isEnable()){
-        *result = nullptr;
+        *result = NULL;
         sRet = Status::IOError(fname,Win32::GetLastErrSz());
     }else
         *result = pFile;

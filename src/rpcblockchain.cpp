@@ -27,8 +27,8 @@ double GetDifficulty(const CBlockIndex* blockindex)
 {
     // Floating point number that is a multiple of the minimum difficulty,
     // minimum difficulty = 1.0.
-    if (blockindex == nullptr) {
-        if (chainActive.Tip() == nullptr)
+    if (blockindex == NULL) {
+        if (chainActive.Tip() == NULL)
             return 1.0;
         else
             blockindex = chainActive.Tip();

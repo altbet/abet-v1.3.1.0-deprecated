@@ -98,9 +98,9 @@ void CObfuScationRelay::RelayThroughNode(int nRank)
 {
     CMasternode* pmn = mnodeman.GetMasternodeByRank(nRank, nBlockHeight, ActiveProtocol());
 
-    if (pmn != nullptr) {
+    if (pmn != NULL) {
         //printf("RelayThroughNode %s\n", pmn->addr.ToString().c_str());
-        CNode* pnode = ConnectNode((CAddress)pmn->addr, nullptr, false);
+        CNode* pnode = ConnectNode((CAddress)pmn->addr, NULL, false);
         if (pnode) {
             //printf("Connected\n");
             pnode->PushMessage("dsr", (*this));
@@ -108,6 +108,6 @@ void CObfuScationRelay::RelayThroughNode(int nRank)
             return;
         }
     } else {
-        //printf("RelayThroughNode nullptr\n");
+        //printf("RelayThroughNode NULL\n");
     }
 }

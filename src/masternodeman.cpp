@@ -206,7 +206,7 @@ bool CMasternodeMan::Add(CMasternode& mn)
         return false;
 
     CMasternode* pmn = Find(mn.vin);
-    if (pmn == nullptr) {
+    if (pmn == NULL) {
         LogPrint("masternode", "CMasternodeMan: Adding new Masternode %s - %i now\n", mn.vin.prevout.hash.ToString(), size() + 1);
         vMasternodes.push_back(mn);
         return true;
@@ -445,7 +445,7 @@ CMasternode* CMasternodeMan::Find(const CScript& payee)
         if (payee2 == payee)
             return &mn;
     }
-    return nullptr;
+    return NULL;
 }
 
 CMasternode* CMasternodeMan::Find(const CTxIn& vin)
@@ -456,7 +456,7 @@ CMasternode* CMasternodeMan::Find(const CTxIn& vin)
         if (mn.vin.prevout == vin.prevout)
             return &mn;
     }
-    return nullptr;
+    return NULL;
 }
 
 
@@ -468,7 +468,7 @@ CMasternode* CMasternodeMan::Find(const CPubKey& pubKeyMasternode)
         if (mn.pubKeyMasternode == pubKeyMasternode)
             return &mn;
     }
-    return nullptr;
+    return NULL;
 }
 
 //
@@ -478,7 +478,7 @@ CMasternode* CMasternodeMan::GetNextMasternodeInQueueForPayment(int nBlockHeight
 {
     LOCK(cs);
 
-    CMasternode* pBestMasternode = nullptr;
+    CMasternode* pBestMasternode = NULL;
     std::vector<pair<int64_t, CTxIn> > vecMasternodeLastPaid;
 
     /*
@@ -543,7 +543,7 @@ CMasternode* CMasternodeMan::FindRandomNotInVec(std::vector<CTxIn>& vecToExclude
 
     int nCountEnabled = CountEnabled(protocolVersion);
     LogPrint("masternode", "CMasternodeMan::FindRandomNotInVec - nCountEnabled - vecToExclude.size() %d\n", nCountEnabled - vecToExclude.size());
-    if (nCountEnabled - vecToExclude.size() < 1) return nullptr;
+    if (nCountEnabled - vecToExclude.size() < 1) return NULL;
 
     int rand = GetRandInt(nCountEnabled - vecToExclude.size());
     LogPrint("masternode", "CMasternodeMan::FindRandomNotInVec - rand %d\n", rand);
@@ -564,13 +564,13 @@ CMasternode* CMasternodeMan::FindRandomNotInVec(std::vector<CTxIn>& vecToExclude
         }
     }
 
-    return nullptr;
+    return NULL;
 }
 
 CMasternode* CMasternodeMan::GetCurrentMasterNode(int mod, int64_t nBlockHeight, int minProtocol)
 {
     int64_t score = 0;
-    CMasternode* winner = nullptr;
+    CMasternode* winner = NULL;
 
     // scan for winner
     BOOST_FOREACH (CMasternode& mn, vMasternodes) {
@@ -705,7 +705,7 @@ CMasternode* CMasternodeMan::GetMasternodeByRank(int nRank, int64_t nBlockHeight
         }
     }
 
-    return nullptr;
+    return NULL;
 }
 
 void CMasternodeMan::ProcessMasternodeConnections()
@@ -716,7 +716,7 @@ void CMasternodeMan::ProcessMasternodeConnections()
     LOCK(cs_vNodes);
     BOOST_FOREACH (CNode* pnode, vNodes) {
         if (pnode->fObfuScationMaster) {
-            if (obfuScationPool.pSubmittedToMasternode != nullptr && pnode->addr == obfuScationPool.pSubmittedToMasternode->addr) continue;
+            if (obfuScationPool.pSubmittedToMasternode != NULL && pnode->addr == obfuScationPool.pSubmittedToMasternode->addr) continue;
             LogPrintf("Closing Masternode connection peer=%i \n", pnode->GetId());
             pnode->fObfuScationMaster = false;
             pnode->Release();
@@ -791,7 +791,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
             // if nothing significant failed, search existing Masternode list
             CMasternode* pmn = Find(mnp.vin);
             // if it's known, don't ask for the mnb, just return
-            if (pmn != nullptr) return;
+            if (pmn != NULL) return;
         }
 
         // something significant is broken or mn is unknown,
@@ -933,7 +933,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
 
         //search existing Masternode list, this is where we update existing Masternodes with new dsee broadcasts
         CMasternode* pmn = this->Find(vin);
-        if (pmn != nullptr) {
+        if (pmn != NULL) {
             // count == -1 when it's a new entry
             //   e.g. We don't want the entry relayed/time updated when we're syncing the list
             // mn.pubkey = pubkey, IsVinAssociatedWithPubkey is validated once below,
@@ -996,7 +996,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
         {
             TRY_LOCK(cs_main, lockMain);
             if (!lockMain) return;
-            fAcceptable = AcceptableInputs(mempool, state, CTransaction(tx), false, nullptr);
+            fAcceptable = AcceptableInputs(mempool, state, CTransaction(tx), false, NULL);
         }
 
         if (fAcceptable) {
@@ -1094,7 +1094,7 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
 
         // see if we have this Masternode
         CMasternode* pmn = this->Find(vin);
-        if (pmn != nullptr && pmn->protocolVersion >= masternodePayments.GetMinMasternodePaymentsProto()) {
+        if (pmn != NULL && pmn->protocolVersion >= masternodePayments.GetMinMasternodePaymentsProto()) {
             // LogPrintf("dseep - Found corresponding mn for vin: %s\n", vin.ToString().c_str());
             // take this only if it's newer
             if (sigTime - pmn->nLastDseep > MASTERNODE_MIN_MNP_SECONDS) {
@@ -1157,7 +1157,7 @@ void CMasternodeMan::UpdateMasternodeList(CMasternodeBroadcast mnb)
     LogPrintf("CMasternodeMan::UpdateMasternodeList -- masternode=%s\n", mnb.vin.prevout.ToStringShort());
 
     CMasternode* pmn = Find(mnb.vin);
-    if (pmn == nullptr) {
+    if (pmn == NULL) {
         CMasternode mn(mnb);
         if (Add(mn)) {
             masternodeSync.AddedMasternodeList(mnb.GetHash());

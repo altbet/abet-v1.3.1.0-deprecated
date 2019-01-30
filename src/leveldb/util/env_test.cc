@@ -26,14 +26,14 @@ static void SetBool(void* ptr) {
 }
 
 TEST(EnvPosixTest, RunImmediately) {
-  port::AtomicPointer called (nullptr);
+  port::AtomicPointer called (NULL);
   env_->Schedule(&SetBool, &called);
   Env::Default()->SleepForMicroseconds(kDelayMicros);
-  ASSERT_TRUE(called.NoBarrier_Load() != nullptr);
+  ASSERT_TRUE(called.NoBarrier_Load() != NULL);
 }
 
 TEST(EnvPosixTest, RunMany) {
-  port::AtomicPointer last_id (nullptr);
+  port::AtomicPointer last_id (NULL);
 
   struct CB {
     port::AtomicPointer* last_id_ptr;   // Pointer to shared slot

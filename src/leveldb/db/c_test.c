@@ -21,13 +21,13 @@ static void StartPhase(const char* name) {
 
 static const char* GetTempDir(void) {
     const char* ret = getenv("TEST_TMPDIR");
-    if (ret == nullptr || ret[0] == '\0')
+    if (ret == NULL || ret[0] == '\0')
         ret = "/tmp";
     return ret;
 }
 
 #define CheckNoError(err)                                               \
-  if ((err) != nullptr) {                                                  \
+  if ((err) != NULL) {                                                  \
     fprintf(stderr, "%s:%d: %s: %s\n", __FILE__, __LINE__, phase, (err)); \
     abort();                                                            \
   }
@@ -39,9 +39,9 @@ static const char* GetTempDir(void) {
   }
 
 static void CheckEqual(const char* expected, const char* v, size_t n) {
-  if (expected == nullptr && v == nullptr) {
+  if (expected == NULL && v == NULL) {
     // ok
-  } else if (expected != nullptr && v != nullptr && n == strlen(expected) &&
+  } else if (expected != NULL && v != NULL && n == strlen(expected) &&
              memcmp(expected, v, n) == 0) {
     // ok
     return;
@@ -57,7 +57,7 @@ static void CheckEqual(const char* expected, const char* v, size_t n) {
 static void Free(char** ptr) {
   if (*ptr) {
     free(*ptr);
-    *ptr = nullptr;
+    *ptr = NULL;
   }
 }
 
@@ -66,7 +66,7 @@ static void CheckGet(
     const leveldb_readoptions_t* options,
     const char* key,
     const char* expected) {
-  char* err = nullptr;
+  char* err = NULL;
   size_t val_len;
   char* val;
   val = leveldb_get(db, options, key, strlen(key), &val_len, &err);
@@ -162,7 +162,7 @@ int main(int argc, char** argv) {
   leveldb_options_t* options;
   leveldb_readoptions_t* roptions;
   leveldb_writeoptions_t* woptions;
-  char* err = nullptr;
+  char* err = NULL;
   int run = -1;
 
   CheckCondition(leveldb_major_version() >= 1);
@@ -174,7 +174,7 @@ int main(int argc, char** argv) {
            ((int) geteuid()));
 
   StartPhase("create_objects");
-  cmp = leveldb_comparator_create(nullptr, CmpDestroy, CmpCompare, CmpName);
+  cmp = leveldb_comparator_create(NULL, CmpDestroy, CmpCompare, CmpName);
   env = leveldb_create_default_env();
   cache = leveldb_cache_create_lru(100000);
 
@@ -183,7 +183,7 @@ int main(int argc, char** argv) {
   leveldb_options_set_error_if_exists(options, 1);
   leveldb_options_set_cache(options, cache);
   leveldb_options_set_env(options, env);
-  leveldb_options_set_info_log(options, nullptr);
+  leveldb_options_set_info_log(options, NULL);
   leveldb_options_set_write_buffer_size(options, 100000);
   leveldb_options_set_paranoid_checks(options, 1);
   leveldb_options_set_max_open_files(options, 10);
@@ -204,20 +204,20 @@ int main(int argc, char** argv) {
 
   StartPhase("open_error");
   db = leveldb_open(options, dbname, &err);
-  CheckCondition(err != nullptr);
+  CheckCondition(err != NULL);
   Free(&err);
 
   StartPhase("leveldb_free");
   db = leveldb_open(options, dbname, &err);
-  CheckCondition(err != nullptr);
+  CheckCondition(err != NULL);
   leveldb_free(err);
-  err = nullptr;
+  err = NULL;
 
   StartPhase("open");
   leveldb_options_set_create_if_missing(options, 1);
   db = leveldb_open(options, dbname, &err);
   CheckNoError(err);
-  CheckGet(db, roptions, "foo", nullptr);
+  CheckGet(db, roptions, "foo", NULL);
 
   StartPhase("put");
   leveldb_put(db, woptions, "foo", 3, "hello", 5, &err);
@@ -225,7 +225,7 @@ int main(int argc, char** argv) {
   CheckGet(db, roptions, "foo", "hello");
 
   StartPhase("compactall");
-  leveldb_compact_range(db, nullptr, 0, nullptr, 0);
+  leveldb_compact_range(db, NULL, 0, NULL, 0);
   CheckGet(db, roptions, "foo", "hello");
 
   StartPhase("compactrange");
@@ -243,7 +243,7 @@ int main(int argc, char** argv) {
     leveldb_write(db, woptions, wb, &err);
     CheckNoError(err);
     CheckGet(db, roptions, "foo", "hello");
-    CheckGet(db, roptions, "bar", nullptr);
+    CheckGet(db, roptions, "bar", NULL);
     CheckGet(db, roptions, "box", "c");
     int pos = 0;
     leveldb_writebatch_iterate(wb, &pos, CheckPut, CheckDel);
@@ -300,9 +300,9 @@ int main(int argc, char** argv) {
   StartPhase("property");
   {
     char* prop = leveldb_property_value(db, "nosuchprop");
-    CheckCondition(prop == nullptr);
+    CheckCondition(prop == NULL);
     prop = leveldb_property_value(db, "leveldb.stats");
-    CheckCondition(prop != nullptr);
+    CheckCondition(prop != NULL);
     Free(&prop);
   }
 
@@ -314,8 +314,8 @@ int main(int argc, char** argv) {
     CheckNoError(err);
     leveldb_readoptions_set_snapshot(roptions, snap);
     CheckGet(db, roptions, "foo", "hello");
-    leveldb_readoptions_set_snapshot(roptions, nullptr);
-    CheckGet(db, roptions, "foo", nullptr);
+    leveldb_readoptions_set_snapshot(roptions, NULL);
+    CheckGet(db, roptions, "foo", NULL);
     leveldb_release_snapshot(db, snap);
   }
 
@@ -328,8 +328,8 @@ int main(int argc, char** argv) {
     CheckNoError(err);
     db = leveldb_open(options, dbname, &err);
     CheckNoError(err);
-    CheckGet(db, roptions, "foo", nullptr);
-    CheckGet(db, roptions, "bar", nullptr);
+    CheckGet(db, roptions, "foo", NULL);
+    CheckGet(db, roptions, "bar", NULL);
     CheckGet(db, roptions, "box", "c");
     leveldb_options_set_create_if_missing(options, 1);
     leveldb_options_set_error_if_exists(options, 1);
@@ -342,7 +342,7 @@ int main(int argc, char** argv) {
     leveldb_filterpolicy_t* policy;
     if (run == 0) {
       policy = leveldb_filterpolicy_create(
-          nullptr, FilterDestroy, FilterCreate, FilterKeyMatch, FilterName);
+          NULL, FilterDestroy, FilterCreate, FilterKeyMatch, FilterName);
     } else {
       policy = leveldb_filterpolicy_create_bloom(10);
     }
@@ -357,7 +357,7 @@ int main(int argc, char** argv) {
     CheckNoError(err);
     leveldb_put(db, woptions, "bar", 3, "barvalue", 8, &err);
     CheckNoError(err);
-    leveldb_compact_range(db, nullptr, 0, nullptr, 0);
+    leveldb_compact_range(db, NULL, 0, NULL, 0);
 
     fake_filter_result = 1;
     CheckGet(db, roptions, "foo", "foovalue");
@@ -365,14 +365,14 @@ int main(int argc, char** argv) {
     if (phase == 0) {
       // Must not find value when custom filter returns false
       fake_filter_result = 0;
-      CheckGet(db, roptions, "foo", nullptr);
-      CheckGet(db, roptions, "bar", nullptr);
+      CheckGet(db, roptions, "foo", NULL);
+      CheckGet(db, roptions, "bar", NULL);
       fake_filter_result = 1;
 
       CheckGet(db, roptions, "foo", "foovalue");
       CheckGet(db, roptions, "bar", "barvalue");
     }
-    leveldb_options_set_filter_policy(options, nullptr);
+    leveldb_options_set_filter_policy(options, NULL);
     leveldb_filterpolicy_destroy(policy);
   }
 
