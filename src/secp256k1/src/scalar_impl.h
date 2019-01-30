@@ -33,10 +33,10 @@ typedef struct {
 #endif
 } secp256k1_scalar_consts_t;
 
-static const secp256k1_scalar_consts_t *secp256k1_scalar_consts = nullptr;
+static const secp256k1_scalar_consts_t *secp256k1_scalar_consts = NULL;
 
 static void secp256k1_scalar_start(void) {
-    if (secp256k1_scalar_consts != nullptr)
+    if (secp256k1_scalar_consts != NULL)
         return;
 
     /* Allocate. */
@@ -117,13 +117,13 @@ static void secp256k1_scalar_start(void) {
         0x7f,0xa9,0x0a,0xbf,0xe4,0xc4,0x22,0x12
     };
 
-    secp256k1_scalar_set_b32(&ret->minus_lambda, secp256k1_scalar_consts_lambda, nullptr);
+    secp256k1_scalar_set_b32(&ret->minus_lambda, secp256k1_scalar_consts_lambda, NULL);
     secp256k1_scalar_negate(&ret->minus_lambda, &ret->minus_lambda);
-    secp256k1_scalar_set_b32(&ret->minus_b1, secp256k1_scalar_consts_minus_b1, nullptr);
-    secp256k1_scalar_set_b32(&ret->minus_b2, secp256k1_scalar_consts_b2, nullptr);
+    secp256k1_scalar_set_b32(&ret->minus_b1, secp256k1_scalar_consts_minus_b1, NULL);
+    secp256k1_scalar_set_b32(&ret->minus_b2, secp256k1_scalar_consts_b2, NULL);
     secp256k1_scalar_negate(&ret->minus_b2, &ret->minus_b2);
-    secp256k1_scalar_set_b32(&ret->g1, secp256k1_scalar_consts_g1, nullptr);
-    secp256k1_scalar_set_b32(&ret->g2, secp256k1_scalar_consts_g2, nullptr);
+    secp256k1_scalar_set_b32(&ret->g1, secp256k1_scalar_consts_g1, NULL);
+    secp256k1_scalar_set_b32(&ret->g2, secp256k1_scalar_consts_g2, NULL);
 #endif
 
     /* Set the global pointer. */
@@ -131,11 +131,11 @@ static void secp256k1_scalar_start(void) {
 }
 
 static void secp256k1_scalar_stop(void) {
-    if (secp256k1_scalar_consts == nullptr)
+    if (secp256k1_scalar_consts == NULL)
         return;
 
     secp256k1_scalar_consts_t *c = (secp256k1_scalar_consts_t*)secp256k1_scalar_consts;
-    secp256k1_scalar_consts = nullptr;
+    secp256k1_scalar_consts = NULL;
     free(c);
 }
 
@@ -312,7 +312,7 @@ static void secp256k1_scalar_inverse_var(secp256k1_scalar_t *r, const secp256k1_
     secp256k1_num_set_bin(&n, b, 32);
     secp256k1_num_mod_inverse(&n, &n, &secp256k1_scalar_consts->order);
     secp256k1_num_get_bin(b, 32, &n);
-    secp256k1_scalar_set_b32(r, b, nullptr);
+    secp256k1_scalar_set_b32(r, b, NULL);
 #else
 #error "Please select scalar inverse implementation"
 #endif
