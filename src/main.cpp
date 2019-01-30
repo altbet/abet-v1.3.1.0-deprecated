@@ -2087,12 +2087,12 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
 					coins->vout.resize(out.n + 1);
 				coins->vout[out.n] = undo.txout;
 
-				{
-					LOCK(cs_mapstake);
+				//{
+					//LOCK(cs_mapstake);
 
 					// erase the spent input
 					mapStakeSpent.erase(out);
-				}
+				//}
 			}
 		}
 	}
@@ -2328,16 +2328,13 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 			return state.Abort("Failed to write transaction index");
 
 	if (ActiveProtocol() >= FAKE_STAKE_VERSION) {
-		{
-			LOCK(cs_mapstake);
-
-			// add new entries Galilel-Project
-			for (const CTransaction tx : block.vtx) {
-				if (tx.IsCoinBase() || tx.IsZerocoinSpend())
-					continue;
-				for (const CTxIn in : tx.vin) {
-					mapStakeSpent.insert(std::make_pair(in.prevout, pindex->nHeight));
-				}
+		// add new entries
+		for (const CTransaction tx : block.vtx) {
+			if (tx.IsCoinBase())
+				continue;
+			for (const CTxIn in : tx.vin) {
+				LogPrint("map", "mapStakeSpent: Insert %s | %u\n", in.prevout.ToString(), pindex->nHeight);
+				mapStakeSpent.insert(std::make_pair(in.prevout, pindex->nHeight));
 			}
 		}
 
