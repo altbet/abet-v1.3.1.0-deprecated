@@ -67,7 +67,6 @@ set<pair<COutPoint, unsigned int> > setStakeSeen;
 // active chain, or the staking input was spent in the past 100 blocks after the height
 // of the incoming block.
 map<COutPoint, int> mapStakeSpent;
-
 map<unsigned int, unsigned int> mapHashedBlocks;
 CChain chainActive;
 CBlockIndex* pindexBestHeader = NULL;
@@ -2089,12 +2088,12 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
 					coins->vout.resize(out.n + 1);
 				coins->vout[out.n] = undo.txout;
 
-				//{
-					//LOCK(cs_mapstake);
+				{
+					LOCK(cs_mapstake);
 
 					// erase the spent input
 					mapStakeSpent.erase(out);
-				//}
+				}
 			}
 		}
 	}
@@ -2330,27 +2329,28 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 			return state.Abort("Failed to write transaction index");
 
 	if (ActiveProtocol() >= FAKE_STAKE_VERSION) {
-		// add new entries
-		for (const CTransaction tx : block.vtx) {
-			if (tx.IsCoinBase())
-				continue;
-			for (const CTxIn in : tx.vin) {
-				LogPrint("map", "mapStakeSpent: Insert %s | %u\n", in.prevout.ToString(), pindex->nHeight);
-				mapStakeSpent.insert(std::make_pair(in.prevout, pindex->nHeight));
-			}
-		}
+		{
+			LOCK(cs_mapstake);
 
-		// delete old entries
-		for (auto it = mapStakeSpent.begin(); it != mapStakeSpent.end();) {
-			if (it->second < pindex->nHeight - Params().MaxReorganizationDepth()) {
-				LogPrint("map", "mapStakeSpent: Erase %s | %u\n", it->first.ToString(), it->second);
-				it = mapStakeSpent.erase(it);
+			// add new entries
+			for (const CTransaction tx : block.vtx) {
+				if (tx.IsCoinBase())
+					continue;
+				for (const CTxIn in : tx.vin) {
+					mapStakeSpent.insert(std::make_pair(in.prevout, pindex->nHeight));
+				}
 			}
-			else {
-				it++;
+
+			// delete old entries
+			for (auto it = mapStakeSpent.begin(); it != mapStakeSpent.end();) {
+				if (it->second < pindex->nHeight - Params().MaxReorganizationDepth()) {
+					it = mapStakeSpent.erase(it);
+				}
+				else {
+					it++;
+				}
 			}
 		}
-	}
 
 	// add this block to the view's block chain
 	view.SetBestBlock(pindex->GetBlockHash());
