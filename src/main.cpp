@@ -2329,8 +2329,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 			return state.Abort("Failed to write transaction index");
 
 	if (ActiveProtocol() >= FAKE_STAKE_VERSION) {
-		{
-			LOCK(cs_mapstake);
+		//{
+			//LOCK(cs_mapstake);
 			// add new entries
 			for (const CTransaction tx : block.vtx) {
 				if (tx.IsCoinBase())
@@ -2351,7 +2351,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 					it++;
 				}
 			}
-		}
+		//}
 	}
 
 	// add this block to the view's block chain
