@@ -3517,6 +3517,8 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
 					}
 				}
 			}
+		}
+	}
 
 			// if this is on a fork
 			if (!chainActive.Contains(pindexPrev) && pindexPrev != NULL) {
