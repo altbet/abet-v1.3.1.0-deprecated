@@ -1,6 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
-// Copyright (c) 2019 Altebet.io / CCBC Team
+// Copyright (c) 2019 Altbet.io / CCBC Team
 // Developed by TFinch / Aviator
 //  
 // Distributed under the MIT software license, see the accompanying
