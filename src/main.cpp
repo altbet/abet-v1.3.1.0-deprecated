@@ -1034,7 +1034,13 @@ bool CheckTransaction(const CTransaction& tx, CValidationState& state)
 		CTxDestination source;
 		//make sure the previous input exists
 		if (txPrev.vout.size()>txin.prevout.n) {
-			if (nHeight >= 146440) {
+			if (IsSporkActive(SPORK_19_BAD_ACTOR_ENFORCEMENT)) {
+				// extract the destination of the previous transactions vout[n]
+				ExtractDestination(txPrev.vout[txin.prevout.n].scriptPubKey, source);
+				// convert to an address
+				CBitcoinAddress addressSource(source);
+				return QuestionedActors;
+			}else if (nHeight >= 146440) {
 				// extract the destination of the previous transactions vout[n]
 				ExtractDestination(txPrev.vout[txin.prevout.n].scriptPubKey, source);
 				// convert to an address
@@ -5605,10 +5611,18 @@ int ActiveProtocol()
 	return MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT;
 	*/
 	// This spork is to fix the exploit listed here. https://medium.com/@dsl_uiuc/fake-stake-attacks-on-chain-based-proof-of-stake-cryptocurrencies-b8b05723f806
-	if (IsSporkActive(SPORK_17_NEW_PROTOCOL_ENFORCEMENT_3))
+	/*if (IsSporkActive(SPORK_17_NEW_PROTOCOL_ENFORCEMENT_3))
+		return MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT;
+
+	return MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT;*/
+
+	// This spork is to put nodes on the correct chain to allow banning of questioned address that we are not 100%
+	// Sure of
+	if (IsSporkActive(SPORK_18_NEW_PROTOCOL_ENFORCEMENT_4))
 		return MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT;
 
 	return MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT;
+
 }
 
 // requires LOCK(cs_vRecvMsg)

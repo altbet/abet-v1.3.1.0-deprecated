@@ -651,6 +651,10 @@ bool BadActor(const CTransaction& tx, CValidationState& state) {
 	}
 }
 
+bool QuestionedActors(const CTransaction& tx, CValidationState& state) {
+
+}
+
 /*
 bool BadActor(const CTransaction& tx, CValidationState& state) {
 {
