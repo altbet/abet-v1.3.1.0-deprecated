@@ -15,7 +15,7 @@
 // Initial Release was 72000
 // Initial Rewards Fix on 72001 by TFinch
 // GUI update with chart
-static const int PROTOCOL_VERSION = 72002;
+static const int PROTOCOL_VERSION = 72003;
 
 //! initial proto version, to be increased after version/verack negotiation
 static const int INIT_PROTO_VERSION = 209;
@@ -24,8 +24,11 @@ static const int INIT_PROTO_VERSION = 209;
 static const int GETHEADERS_VERSION = 70077;
 
 //! disconnect from peers older than this proto version
-static const int MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT = 72001;
-static const int MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT = 72002;
+static const int MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT = 72002;
+static const int MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT = 72003;
+
+//! In this version, "Fake Stake" vulnerability mitigations were introduced.
+static const int FAKE_STAKE_VERSION = 72002;
 
 //! nTime field added to CAddress, starting with this version;
 //! if possible, avoid requesting addresses nodes older than this

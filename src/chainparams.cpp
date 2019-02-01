@@ -59,12 +59,14 @@ static Checkpoints::MapCheckpoints mapCheckpoints =
 	(50000, uint256("0x7fa19cb74f56e08493ad0aabff32c3bb1db2e2e42057d769b5205157715b3814"))
 	(75000, uint256("0xfe2dc50926d862a08db3cef959c680c347517990fd9834f5b5e0735625237c7d"))
 	(100000, uint256("0xfd450409427fcb21b6622c0d98807964a05819a1549c621538ca4feceae4f53e"))
-	(140000, uint256("0x7050c6e86b24699c8bc487796d1a69f8525bbed35b900feb562766746f2fb47a"));
+	(140000, uint256("0x7050c6e86b24699c8bc487796d1a69f8525bbed35b900feb562766746f2fb47a"))
+	(153196, uint256("0x2ee0bf66c24c0630959bc5c7080cd013b4bf226cc1f5e49367cd1e0879c4ec0e"));
+
 
 static const Checkpoints::CCheckpointData data = {
     &mapCheckpoints,
-	1548171487, // * UNIX timestamp of last checkpoint block
-	336513,          // * total number of transactions between genesis and last checkpoint
+	1548972178, // * UNIX timestamp of last checkpoint block
+	374634,          // * total number of transactions between genesis and last checkpoint
                 //   (the tx=... number in the SetBestChain debug.log lines)
 	200        // * estimated number of transactions per day after checkpoint
 };
@@ -111,9 +113,10 @@ public:
         nMaturity = 15;
         nMasternodeCountDrift = 20;
         nMasternodeCollateralLimit = 1000;
-        nModifierUpdateBlock = 615800;
+        nModifierUpdateBlock = 615800; //615800
         nMaxMoneyOut = 21000000 * COIN;
         const char* pszTimestamp = "Winner, winner chicken dinner.";
+
         CMutableTransaction txNew;
         txNew.vin.resize(1);
         txNew.vout.resize(1);
@@ -147,12 +150,12 @@ public:
         convertSeed6(vFixedSeeds, pnSeed6_main, ARRAYLEN(pnSeed6_main));
 
         fRequireRPCPassword = true;
-        fMiningRequiresPeers = false;		// default true
+        fMiningRequiresPeers = true;		// default true
         fAllowMinDifficultyBlocks = false;
         fDefaultConsistencyChecks = false;
         fRequireStandard = true;
         fMineBlocksOnDemand = false;
-        fSkipProofOfWorkCheck = true;		// default false
+        fSkipProofOfWorkCheck = false;		// default false
         fTestnetToBeDeprecatedFieldRPC = false;
         fHeadersFirstSyncingActive = false;
 
