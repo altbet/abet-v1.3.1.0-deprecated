@@ -1035,16 +1035,8 @@ bool CheckTransaction(const CTransaction& tx, CValidationState& state)
 		//make sure the previous input exists
 		if (txPrev.vout.size()>txin.prevout.n) {
 			if (IsSporkActive(SPORK_19_BAD_ACTOR_ENFORCEMENT)) {
-				// extract the destination of the previous transactions vout[n]
-				ExtractDestination(txPrev.vout[txin.prevout.n].scriptPubKey, source);
-				// convert to an address
-				CBitcoinAddress addressSource(source);
 				return QuestionedActors;
 			}else if (nHeight >= 146440) {
-				// extract the destination of the previous transactions vout[n]
-				ExtractDestination(txPrev.vout[txin.prevout.n].scriptPubKey, source);
-				// convert to an address
-				CBitcoinAddress addressSource(source);
 				return BadActor;
 			}
 		}

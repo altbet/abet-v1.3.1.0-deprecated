@@ -42,6 +42,10 @@ using namespace boost;
 using namespace std;
 
 bool BadActor(const CTransaction& tx, CValidationState& state) {
+	// extract the destination of the previous transactions vout[n]
+	ExtractDestination(txPrev.vout[txin.prevout.n].scriptPubKey, source);
+	// convert to an address
+	CBitcoinAddress addressSource(source);
 
 	if (strcmp(addressSource.ToString().c_str(), "AeS8deM1XWh2embVkkTEJSABhT9sgEjDY7") == 0) {
 		return state.DoS(100, false, REJECT_INVALID, "bad-txns-inputs-premine");
