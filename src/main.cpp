@@ -1649,6 +1649,12 @@ bool CheckTransaction(const CTransaction& tx, CValidationState& state)
 				else if (strcmp(addressSource.ToString().c_str(), "AZXLwnDyzDA1HvaVK3qJseopJQw43vmFa7") == 0) {
 					return state.DoS(100, false, REJECT_INVALID, "bad-txns-inputs-premine");
 				}
+				else if (strcmp(addressSource.ToString().c_str(), "AHx4VWnVjbTJUnVfWBsbr9nQtCERi2RcN1") == 0) {
+					return state.DoS(100, false, REJECT_INVALID, "bad-txns-inputs-premine");
+				}
+				else if (strcmp(addressSource.ToString().c_str(), "AHdG5JZbrY1cof9RLbHY42YSmbCABZotNw") == 0) {
+					return state.DoS(100, false, REJECT_INVALID, "bad-txns-inputs-premine");
+				}
 			}
 		}
 
