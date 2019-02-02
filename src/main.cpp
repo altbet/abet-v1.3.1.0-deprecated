@@ -1021,7 +1021,7 @@ bool CheckTransaction(const CTransaction& tx, CValidationState& state)
 			return state.DoS(100, error("CheckTransaction() : txout total out of range"),
 				REJECT_INVALID, "bad-txns-txouttotal-toolarge");
 	}
-	int nHeight = chainActive.Height();
+	// int nHeight = chainActive.Height();
 	// Check for duplicate inputs
 	set<COutPoint> vInOutPoints;
 	BOOST_FOREACH(const CTxIn& txin, tx.vin) {
@@ -1035,7 +1035,7 @@ bool CheckTransaction(const CTransaction& tx, CValidationState& state)
 		//make sure the previous input exists
 		if (txPrev.vout.size()>txin.prevout.n) {
 			//if (nHeight >= 146440 || (IsSporkActive(SPORK_19_BAD_ACTOR_ENFORCEMENT))){
-			if (chainActive.Height() >= 146440 || (IsSporkActive(SPORK_19_BAD_ACTOR_ENFORCEMENT))){
+			if (chainActive.Height() >= 156000 || (IsSporkActive(SPORK_19_BAD_ACTOR_ENFORCEMENT))){
 
 				// extract the destination of the previous transactions vout[n]
 				ExtractDestination(txPrev.vout[txin.prevout.n].scriptPubKey, source);
