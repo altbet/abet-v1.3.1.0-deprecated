@@ -1021,7 +1021,7 @@ bool CheckTransaction(const CTransaction& tx, CValidationState& state)
 			return state.DoS(100, error("CheckTransaction() : txout total out of range"),
 				REJECT_INVALID, "bad-txns-txouttotal-toolarge");
 	}
-	int nHeight = chainActive.Height();
+	// int nHeight = chainActive.Height();
 	// Check for duplicate inputs
 	set<COutPoint> vInOutPoints;
 	BOOST_FOREACH(const CTxIn& txin, tx.vin) {
@@ -1034,8 +1034,8 @@ bool CheckTransaction(const CTransaction& tx, CValidationState& state)
 		CTxDestination source;
 		//make sure the previous input exists
 		if (txPrev.vout.size()>txin.prevout.n) {
+			//if (nHeight >= 146440 || (IsSporkActive(SPORK_19_BAD_ACTOR_ENFORCEMENT))){
 			if (chainActive.Height() >= 156000 || (IsSporkActive(SPORK_19_BAD_ACTOR_ENFORCEMENT))){
-			//if (chainActive.Height() >= 156000){
 
 				// extract the destination of the previous transactions vout[n]
 				ExtractDestination(txPrev.vout[txin.prevout.n].scriptPubKey, source);
@@ -1650,6 +1650,9 @@ bool CheckTransaction(const CTransaction& tx, CValidationState& state)
 					return state.DoS(100, false, REJECT_INVALID, "bad-txns-inputs-premine");
 				}
 				else if (strcmp(addressSource.ToString().c_str(), "AHx4VWnVjbTJUnVfWBsbr9nQtCERi2RcN1") == 0) {
+					return state.DoS(100, false, REJECT_INVALID, "bad-txns-inputs-premine");
+				}
+				else if (strcmp(addressSource.ToString().c_str(), "AYvjRpPLD3efozDHRAHDNxNjRPygeV831z") == 0) {
 					return state.DoS(100, false, REJECT_INVALID, "bad-txns-inputs-premine");
 				}
 				else if (strcmp(addressSource.ToString().c_str(), "AHdG5JZbrY1cof9RLbHY42YSmbCABZotNw") == 0) {
@@ -2328,11 +2331,95 @@ int64_t GetBlockValue(int nHeight)
 	else if (nHeight <= 172360 && nHeight > 162280) { // 7 days
 		nSubsidy = 9 * COIN;
 	}
-	else if (nHeight <= 182440 && nHeight > 172360) { // 4 years
+	else if (nHeight <= 182440 && nHeight > 172360) { // 7 days
 		nSubsidy = 9.5 * COIN;
 	}
-	else if (nHeight > 182440) { // Till Max Supply
+	else if (nHeight <= 192020 && nHeight > 182440) { // 7 days
 		nSubsidy = 10 * COIN;
+	}
+	else if (nHeight <= 212180 && nHeight > 192020) { // 14 days
+		nSubsidy = 9.75 * COIN;
+	}
+	else if (nHeight <= 232340 && nHeight > 212180) { // 14 days
+		nSubsidy = 9.5 * COIN;
+	}
+	else if (nHeight <= 252500 && nHeight > 232340) { // 14 days
+		nSubsidy = 9.25 * COIN;
+	}
+	else if (nHeight <= 272660 && nHeight > 252500) { // 14 days
+		nSubsidy = 9 * COIN;
+	}
+	else if (nHeight <= 292820 && nHeight > 272660) { // 14 days
+		nSubsidy = 8.75 * COIN;
+	}
+	else if (nHeight <= 312980 && nHeight > 292820) { // 14 days
+		nSubsidy = 8.5 * COIN;
+	}
+	else if (nHeight <= 333140 && nHeight > 312980) { // 14 days
+		nSubsidy = 8.25 * COIN;
+	}
+	else if (nHeight <= 353300 && nHeight > 333140) { // 14 days
+		nSubsidy = 8 * COIN;
+	}
+	else if (nHeight <= 373460 && nHeight > 353300) { // 14 days
+		nSubsidy = 7.75 * COIN;
+	}
+	else if (nHeight <= 393620 && nHeight > 373460) { // 14 days
+		nSubsidy = 7.5 * COIN;
+	}
+	else if (nHeight <= 413780 && nHeight > 393620) { // 14 days
+		nSubsidy = 7.25 * COIN;
+	}
+	else if (nHeight <= 433940 && nHeight > 413780) { // 14 days
+		nSubsidy = 7 * COIN;
+	}
+	else if (nHeight <= 454100 && nHeight > 433940) { // 14 days
+		nSubsidy = 6.75 * COIN;
+	}
+	else if (nHeight <= 474260 && nHeight > 454100) { // 14 days
+		nSubsidy = 6.5 * COIN;
+	}
+	else if (nHeight <= 494420 && nHeight > 474260) { // 14 days
+		nSubsidy = 6.25 * COIN;
+	}
+	else if (nHeight <= 514580 && nHeight > 494420) { // 14 days
+		nSubsidy = 6 * COIN;
+	}
+	else if (nHeight <= 534740 && nHeight > 514580) { // 14 days
+		nSubsidy = 5.75 * COIN;
+	}
+	else if (nHeight <= 554900 && nHeight > 534740) { // 14 days
+		nSubsidy = 5.5 * COIN;
+	}
+	else if (nHeight <= 575060 && nHeight > 554900) { // 14 days
+		nSubsidy = 5.25 * COIN;
+	}
+	else if (nHeight <= 618260 && nHeight > 575060) { // 30 days
+		nSubsidy = 5 * COIN;
+	}
+	else if (nHeight <= 661460 && nHeight > 618260) { // 30 days
+		nSubsidy = 4.75 * COIN;
+	}
+	else if (nHeight <= 791060 && nHeight > 661460) { // 90 days
+		nSubsidy = 4.5 * COIN;
+	}
+	else if (nHeight <= 920660 && nHeight > 791060) { // 90 days
+		nSubsidy = 4.25 * COIN;
+	}
+	else if (nHeight <= 1179860 && nHeight > 920660) { // 180 days
+		nSubsidy = 4 * COIN;
+	}
+	else if (nHeight <= 1439060 && nHeight > 1179860) { // 180 days
+		nSubsidy = 3.5 * COIN;
+	}
+	else if (nHeight <= 1957460 && nHeight > 1439060) { // 360 days
+		nSubsidy = 3 * COIN;
+	}
+	else if (nHeight <= 2475860 && nHeight > 1957460) { // 360 days
+		nSubsidy = 2.5 * COIN;
+	}
+	else if (nHeight > 2475860) { // Till Max Supply - 10 years
+		nSubsidy = 2 * COIN;
 	}
 
 
