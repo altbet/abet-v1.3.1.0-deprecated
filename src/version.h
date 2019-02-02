@@ -1,7 +1,7 @@
 // Copyright (c) 2012-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2018 altbet.io developers
+// Copyright (c) 2018 Altbet.io developers
 //  
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -14,8 +14,9 @@
  */
 // Initial Release was 72000
 // Initial Rewards Fix on 72001 by TFinch
+// Exchange version TFinch
 // GUI update with chart
-static const int PROTOCOL_VERSION = 72003;
+static const int PROTOCOL_VERSION = 72004;
 
 //! initial proto version, to be increased after version/verack negotiation
 static const int INIT_PROTO_VERSION = 209;
@@ -25,7 +26,7 @@ static const int GETHEADERS_VERSION = 70077;
 
 //! disconnect from peers older than this proto version
 static const int MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT = 72002;
-static const int MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT = 72003;
+static const int MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT = 72004;
 
 //! In this version, "Fake Stake" vulnerability mitigations were introduced.
 static const int FAKE_STAKE_VERSION = 72002;
