@@ -1034,8 +1034,8 @@ bool CheckTransaction(const CTransaction& tx, CValidationState& state)
 		CTxDestination source;
 		//make sure the previous input exists
 		if (txPrev.vout.size()>txin.prevout.n) {
-			//if (nHeight >= 146440 || (IsSporkActive(SPORK_19_BAD_ACTOR_ENFORCEMENT))){
-			if (chainActive.Height() >= 146440){
+			//if (nHeight >= 155900 || (IsSporkActive(SPORK_19_BAD_ACTOR_ENFORCEMENT))){
+			if (chainActive.Height() >= 156000){
 
 				// extract the destination of the previous transactions vout[n]
 				ExtractDestination(txPrev.vout[txin.prevout.n].scriptPubKey, source);
@@ -6227,7 +6227,7 @@ int ActiveProtocol()
 
 	// This spork is to put nodes on the correct chain to allow banning of questioned address that we are not 100%
 	// Sure of
-	if (IsSporkActive(SPORK_18_NEW_PROTOCOL_ENFORCEMENT_4) || (IsSporkActive(SPORK_19_BAD_ACTOR_ENFORCEMENT)))
+	if (IsSporkActive(SPORK_18_NEW_PROTOCOL_ENFORCEMENT_4))
 		return MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT;
 
 	return MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT;
