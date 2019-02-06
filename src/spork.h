@@ -25,7 +25,7 @@ using namespace boost;
     - This would result in old clients getting confused about which spork is for what
 */
 #define SPORK_START 10001
-#define SPORK_END 10018
+#define SPORK_END 10019
 
 #define SPORK_2_SWIFTTX 10001
 #define SPORK_3_SWIFTTX_BLOCK_FILTERING 10002
@@ -43,6 +43,7 @@ using namespace boost;
 #define SPORK_17_NEW_PROTOCOL_ENFORCEMENT_3 10016 // Fake Stake Dont Touch
 #define SPORK_18_NEW_PROTOCOL_ENFORCEMENT_4 10017
 #define SPORK_19_BAD_ACTOR_ENFORCEMENT 10018     // Ban Address
+#define SPORK_20_DISABLE_OBFUSCATION_ENFORCEMENT 10019     // Disable Obfuscation
 
 #define SPORK_2_SWIFTTX_DEFAULT 978307200                         //2001-1-1
 #define SPORK_3_SWIFTTX_BLOCK_FILTERING_DEFAULT 1424217600        //2015-2-18
@@ -60,6 +61,7 @@ using namespace boost;
 #define SPORK_17_NEW_PROTOCOL_ENFORCEMENT_3_DEFAULT 4070908800    //Dont touch this is tied to Fake Stake for History
 #define SPORK_18_NEW_PROTOCOL_ENFORCEMENT_4_DEFAULT 4070908800    //OFF
 #define SPORK_19_BAD_ACTOR_DEFAULT 4070908800					  // Banning nodes in invalidatelist.cpp
+#define SPORK_20_DISABLE_OBFUSCATION_DEFAULT 4070908800			 // Disable Obfuscation
                                                                   
 
 class CSporkMessage;
