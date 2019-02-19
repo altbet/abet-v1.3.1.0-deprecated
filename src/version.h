@@ -14,9 +14,9 @@
  */
 // Initial Release was 72000
 // Initial Rewards Fix on 72001 by TFinch
-// Exchange version TFinch
-// GUI update with chart
-static const int PROTOCOL_VERSION = 72004;
+// Exchange version, GUI update with chart 72004 TFinch
+// Min Stake Amount changed to 15 coins 72005 TFinch
+static const int PROTOCOL_VERSION = 72005;
 
 //! initial proto version, to be increased after version/verack negotiation
 static const int INIT_PROTO_VERSION = 209;
@@ -25,11 +25,16 @@ static const int INIT_PROTO_VERSION = 209;
 static const int GETHEADERS_VERSION = 70077;
 
 //! disconnect from peers older than this proto version
-static const int MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT = 72002;
-static const int MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT = 72004;
+static const int MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT = 72004;
+static const int MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT = 72005;
 
 //! In this version, "Fake Stake" vulnerability mitigations were introduced.
-static const int FAKE_STAKE_VERSION = 72002;
+// Corrected to last current release 72004 instead of 72002
+// Both 72002 and 72004 correlate to the same Fake Stake update.
+static const int FAKE_STAKE_VERSION = 72004;
+
+// In this version we change the min amount to stake with from any amount to 15 coins
+static const int STAKEV2_VERSION = 72005;
 
 //! nTime field added to CAddress, starting with this version;
 //! if possible, avoid requesting addresses nodes older than this

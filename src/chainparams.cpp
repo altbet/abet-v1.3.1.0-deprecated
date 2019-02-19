@@ -12,6 +12,8 @@
 #include "random.h"
 #include "util.h"
 #include "utilstrencodings.h"
+#include "net.h"
+#include "base58.h"
 
 #include <assert.h>
 
@@ -61,13 +63,14 @@ static Checkpoints::MapCheckpoints mapCheckpoints =
 	(100000, uint256("0xfd450409427fcb21b6622c0d98807964a05819a1549c621538ca4feceae4f53e"))
 	(140000, uint256("0x7050c6e86b24699c8bc487796d1a69f8525bbed35b900feb562766746f2fb47a"))
 	(153196, uint256("0x2ee0bf66c24c0630959bc5c7080cd013b4bf226cc1f5e49367cd1e0879c4ec0e"))
-	(155690, uint256("0x2ba0fd564d92908772fc1d879aa50257b3457e1243162d5d88b33def12254f63"));
+	(155690, uint256("0x2ba0fd564d92908772fc1d879aa50257b3457e1243162d5d88b33def12254f63"))
+	(178464, uint256("0x713883ba7c673271850cd75ce18931d7981df9cb77635c3e2f1506e8f62d6ec7"));
 
 
 static const Checkpoints::CCheckpointData data = {
     &mapCheckpoints,
-	1549123787, // * UNIX timestamp of last checkpoint block
-	380128,          // * total number of transactions between genesis and last checkpoint
+	1550509120, // * UNIX timestamp of last checkpoint block
+	443823,          // * total number of transactions between genesis and last checkpoint
                 //   (the tx=... number in the SetBestChain debug.log lines)
 	200        // * estimated number of transactions per day after checkpoint
 };
@@ -94,6 +97,7 @@ public:
     CMainParams()
     {
         networkID = CBaseChainParams::MAIN;
+		vTreasuryRewardAddress = "ASZQoFTaEeDfxFwJdoZnNg5rW2M3o2SPrD";
         strNetworkID = "main";
 	    pchMessageStart[0] = 0x2a; // A
         pchMessageStart[1] = 0x2b; // B
@@ -114,7 +118,8 @@ public:
         nMaturity = 15;
         nMasternodeCountDrift = 20;
         nMasternodeCollateralLimit = 1000;
-        nModifierUpdateBlock = 615800; //615800
+		nMinStakeInput = 15 * COIN;
+        nModifierUpdateBlock = 615800;
         nMaxMoneyOut = 21000000 * COIN;
         const char* pszTimestamp = "Winner, winner chicken dinner.";
 
@@ -172,6 +177,18 @@ public:
         return data;
     }
 };
+
+std::string CChainParams::GetTreasuryRewardAddressAtHeight(int nHeight) const {
+	return vTreasuryRewardAddress;
+}
+
+CScript CChainParams::GetTreasuryRewardScriptAtHeight(int nHeight) const {
+	CBitcoinAddress address(GetTreasuryRewardAddressAtHeight(nHeight).c_str());
+	assert(address.IsValid());
+
+	CScript script = GetScriptForDestination(address.Get());
+	return script;
+}
 static CMainParams mainParams;
 
 /**
