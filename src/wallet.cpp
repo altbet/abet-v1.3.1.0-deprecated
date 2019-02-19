@@ -1572,8 +1572,14 @@ bool CWallet::SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int
         if (nAmountSelected + out.tx->vout[out.i].nValue > nTargetAmount)
             continue;
 
+		//check for minimal stake input after fork
+		if (ActiveProtocol() >= STAKEV2_VERSION) {
+			if (out.tx->vout[out.i].nValue < Params().StakeInput())
+				continue;
+		}
+
         //check for min age
-        if (GetTime() - out.tx->GetTxTime() < nStakeMinAge)
+        if (GetTime() - out.tx->GetTxTime() < StakeMinAgev2())
             continue;
 
         //check that it is matured
@@ -1599,7 +1605,7 @@ bool CWallet::MintableCoins()
     AvailableCoins(vCoins, true);
 
     BOOST_FOREACH (const COutput& out, vCoins) {
-        if (GetTime() - out.tx->GetTxTime() > nStakeMinAge)
+        if (GetTime() - out.tx->GetTxTime() > StakeMinAgev2())
             return true;
     }
 

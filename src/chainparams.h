@@ -80,6 +80,12 @@ public:
     /** The masternode count that we will allow the see-saw reward payments to be off by */
     int MasternodeCountDrift() const { return nMasternodeCountDrift; }
     int MasternodeCollateralLimit() const { return nMasternodeCollateralLimit; }
+	//Treasury Related
+	std::string vTreasuryRewardAddress;
+	std::string GetTreasuryRewardAddressAtHeight(int height) const;
+	CScript GetTreasuryRewardScriptAtHeight(int height) const;
+	// Min amount in order to stake
+	CAmount StakeInput() const { return nMinStakeInput; }
     /** Make miner stop after a block is found. In RPC, don't return until nGenProcLimit blocks are generated */
     bool MineBlocksOnDemand() const { return fMineBlocksOnDemand; }
     /** In the future use NetworkIDString() for RPC fields */
@@ -117,6 +123,7 @@ protected:
     int nMasternodeCollateralLimit;
     int nMaturity;
     int nModifierUpdateBlock;
+	CAmount nMinStakeInput;
     CAmount nMaxMoneyOut;
     int nMinerThreads;
     std::vector<CDNSSeedData> vSeeds;

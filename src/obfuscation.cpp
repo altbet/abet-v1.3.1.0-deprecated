@@ -48,6 +48,7 @@ CActiveMasternode activeMasternode;
 void CObfuscationPool::ProcessMessageObfuscation(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
     if (fLiteMode) return; //disable all Obfuscation/Masternode related functionality
+	if (IsSporkActive(SPORK_20_DISABLE_OBFUSCATION_ENFORCEMENT)) return;
     if (!masternodeSync.IsBlockchainSynced()) return;
 
     if (strCommand == "dsa") { //Obfuscation Accept Into Pool
@@ -2284,6 +2285,7 @@ void CObfuscationPool::RelayCompletedTransaction(const int sessionID, const bool
 void ThreadCheckObfuScationPool()
 {
     if (fLiteMode) return; //disable all Obfuscation/Masternode related functionality
+	if (IsSporkActive(SPORK_19_BAD_ACTOR_ENFORCEMENT)) return;
 
     // Make this thread recognisable as the wallet flushing thread
     RenameThread("altbet-obfuscation");
